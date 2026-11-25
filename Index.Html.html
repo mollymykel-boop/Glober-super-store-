@@ -1,0 +1,3675 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Intelligence Suite — Enterprise BI Dashboard</title>
+
+  <!-- External CDN Dependencies (Processed 100% Client-Side; No Uploaded Data Transmitted) -->
+  <script id="cdn-xlsx" src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" onerror="window.__cdnStatus.xlsx=false"></script>
+  <script id="cdn-plotly" src="https://cdn.plot.ly/plotly-2.35.2.min.js" onerror="window.__cdnStatus.plotly=false"></script>
+  <script id="cdn-chartjs" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" onerror="window.__cdnStatus.chartjs=false"></script>
+  <script id="cdn-jspdf" src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js" onerror="window.__cdnStatus.jspdf=false"></script>
+  <script id="cdn-html2canvas" src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" onerror="window.__cdnStatus.html2canvas=false"></script>
+  <script id="cdn-pptxgen" src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js" onerror="window.__cdnStatus.pptxgen=false"></script>
+  <script id="cdn-lucide" src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" onerror="window.__cdnStatus.lucide=false"></script>
+
+  <script>
+    window.__cdnStatus = {
+      xlsx: true,
+      plotly: true,
+      chartjs: true,
+      jspdf: true,
+      html2canvas: true,
+      pptxgen: true,
+      lucide: true
+    };
+  </script>
+
+  <style>
+    :root {
+      --brand-primary: #D6002A;
+      --brand-primary-hover: #B30023;
+      --brand-soft: rgba(214, 0, 42, 0.08);
+      --brand-border: rgba(214, 0, 42, 0.25);
+
+      --bg-app: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --bg-hover: #E2E8F0;
+
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --text-inverse: #FFFFFF;
+
+      --border-subtle: #E2E8F0;
+      --border-strong: #CBD5E1;
+
+      --status-pos: #15803D;
+      --status-pos-bg: #DCFCE7;
+      --status-neg: #B91C1C;
+      --status-neg-bg: #FEE2E2;
+      --status-warn: #B45309;
+      --status-warn-bg: #FEF3C7;
+      --status-neu: #334155;
+      --status-neu-bg: #F1F5F9;
+
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+      --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.12);
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --sidebar-width: 260px;
+      --filter-width: 300px;
+      --header-height: 64px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    [data-theme="dark"] {
+      --brand-primary: #FF2A55;
+      --brand-primary-hover: #E01E46;
+      --brand-soft: rgba(255, 42, 85, 0.14);
+      --brand-border: rgba(255, 42, 85, 0.35);
+
+      --bg-app: #0B1120;
+      --bg-surface: #111827;
+      --bg-subtle: #1E293B;
+      --bg-hover: #334155;
+
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #94A3B8;
+      --text-inverse: #0F172A;
+
+      --border-subtle: #1E293B;
+      --border-strong: #334155;
+
+      --status-pos: #4ADE80;
+      --status-pos-bg: rgba(74, 222, 128, 0.14);
+      --status-neg: #F87171;
+      --status-neg-bg: rgba(248, 113, 113, 0.15);
+      --status-warn: #FBBF24;
+      --status-warn-bg: rgba(251, 191, 36, 0.15);
+      --status-neu: #CBD5E1;
+      --status-neu-bg: rgba(148, 163, 184, 0.15);
+
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+      --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.65);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background-color: var(--bg-app);
+      color: var(--text-primary);
+      font-size: 14px;
+      line-height: 1.5;
+      overflow-x: hidden;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Top Header */
+    .app-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      height: var(--header-height);
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .brand-accent-bar {
+      width: 4px;
+      height: 24px;
+      border-radius: 2px;
+      background: var(--brand-primary);
+    }
+
+    .sp500-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .header-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 2px;
+    }
+    .header-center::-webkit-scrollbar { display: none; }
+
+    .page-tab-btn {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .page-tab-btn:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .page-tab-btn.active {
+      background: var(--brand-soft);
+      color: var(--brand-primary);
+      border-color: var(--brand-border);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn, .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .icon-btn:hover, .action-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border-strong);
+    }
+
+    .action-btn.primary {
+      background: var(--brand-primary);
+      color: #FFFFFF;
+      border-color: var(--brand-primary);
+      font-weight: 600;
+    }
+
+    .action-btn.primary:hover {
+      background: var(--brand-primary-hover);
+    }
+
+    .badge-count {
+      background: var(--brand-primary);
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 999px;
+    }
+
+    /* Main Shell Layout */
+    .app-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--filter-width);
+      min-height: calc(100vh - var(--header-height));
+      position: relative;
+    }
+
+    .app-shell.sidebar-collapsed {
+      grid-template-columns: 0px minmax(0, 1fr) var(--filter-width);
+    }
+
+    .app-shell.filter-collapsed {
+      grid-template-columns: var(--sidebar-width) minmax(0, 1fr) 0px;
+    }
+
+    .app-shell.sidebar-collapsed.filter-collapsed {
+      grid-template-columns: 0px minmax(0, 1fr) 0px;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: width 0.2s ease, padding 0.2s ease;
+    }
+
+    .app-shell.sidebar-collapsed .sidebar {
+      width: 0;
+      padding: 0;
+      border-right: none;
+      overflow: hidden;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      padding: 0 8px 6px;
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active {
+      background: var(--brand-soft);
+      color: var(--brand-primary);
+      font-weight: 600;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .nav-item-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .theme-pill {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Main Canvas */
+    .main-canvas {
+      padding: 20px 24px 32px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .page-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .page-title-group h1 {
+      margin: 0 0 4px;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .page-subtitle {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .context-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .meta-chip.active-filter {
+      background: var(--brand-soft);
+      color: var(--brand-primary);
+      border-color: var(--brand-border);
+      font-weight: 600;
+    }
+
+    .export-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+      gap: 14px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .kpi-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+      word-break: break-word;
+    }
+
+    .kpi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .delta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .delta-pos { color: var(--status-pos); background: var(--status-pos-bg); }
+    .delta-neg { color: var(--status-neg); background: var(--status-neg-bg); }
+    .delta-neu { color: var(--status-neu); background: var(--status-neu-bg); }
+
+    /* Visual Grid */
+    .visual-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .visual-grid-1 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .chart-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .chart-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .chart-title {
+      margin: 0;
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .chart-fields {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .chart-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .mini-btn {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      border-radius: var(--radius-sm);
+      padding: 4px 7px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mini-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      min-height: 260px;
+    }
+
+    .chart-container canvas {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .chart-caption {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Executive Summary & Insights */
+    .section-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 12px;
+    }
+
+    .insight-card {
+      border: 1px solid var(--border-subtle);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .insight-card.neutral-accent {
+      border-left-color: var(--status-neu);
+    }
+
+    .insight-card.pos-accent {
+      border-left-color: var(--status-pos);
+    }
+
+    .insight-rank {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--brand-primary);
+    }
+
+    .insight-row {
+      font-size: 12.5px;
+      color: var(--text-primary);
+    }
+
+    .insight-row strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* Tables */
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    table.data-table th {
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 700;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border-strong);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+
+    table.data-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    table.data-table tbody tr:hover {
+      background: var(--bg-subtle);
+    }
+
+    /* Right Global Filter Panel */
+    .filter-panel {
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-subtle);
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: width 0.2s ease, padding 0.2s ease;
+    }
+
+    .app-shell.filter-collapsed .filter-panel {
+      width: 0;
+      padding: 0;
+      border-left: none;
+      overflow: hidden;
+    }
+
+    .filter-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .filter-group {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      background: var(--bg-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-group-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-search, .filter-select, .filter-input {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-size: 12px;
+    }
+
+    .filter-options-list {
+      max-height: 140px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-option-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .date-range-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    /* Upload & Onboarding Zone */
+    .upload-dropzone {
+      border: 2px dashed var(--border-strong);
+      border-radius: var(--radius-lg);
+      padding: 28px 20px;
+      text-align: center;
+      background: var(--bg-surface);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .upload-dropzone.dragover {
+      border-color: var(--brand-primary);
+      background: var(--brand-soft);
+    }
+
+    /* Contextual Tooltip Box */
+    .custom-tooltip-panel {
+      position: fixed;
+      z-index: 70;
+      max-width: 340px;
+      background: var(--bg-surface);
+      border: 1px solid var(--brand-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 12px 14px;
+      pointer-events: none;
+      display: none;
+      font-size: 12px;
+    }
+
+    .custom-tooltip-panel.visible {
+      display: block;
+    }
+
+    /* Overlays & Modals */
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .overlay-backdrop.open {
+      display: flex;
+    }
+
+    .modal-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 920px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-body {
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 360px;
+    }
+
+    .toast-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      box-shadow: var(--shadow-md);
+      font-size: 12.5px;
+      color: var(--text-primary);
+    }
+
+    /* Footer */
+    .app-footer {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-subtle);
+      padding: 14px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .linkedin-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--brand-primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .linkedin-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsive Rules */
+    @media (max-width: 1180px) {
+      .app-shell {
+        grid-template-columns: 220px minmax(0, 1fr) 260px;
+      }
+      .visual-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .app-shell,
+      .app-shell.sidebar-collapsed,
+      .app-shell.filter-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .sidebar, .filter-panel {
+        position: fixed;
+        top: var(--header-height);
+        bottom: 0;
+        z-index: 60;
+        width: 280px !important;
+        padding: 16px 14px !important;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .sidebar {
+        left: -290px;
+        transition: left 0.2s ease;
+      }
+
+      .app-shell:not(.sidebar-collapsed) .sidebar {
+        left: 0;
+      }
+
+      .filter-panel {
+        right: -290px;
+        transition: right 0.2s ease;
+      }
+
+      .app-shell:not(.filter-collapsed) .filter-panel {
+        right: 0;
+      }
+
+      .main-canvas {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Application Header -->
+  <header class="app-header" role="banner">
+    <div class="header-left">
+      <button id="btnToggleSidebar" class="icon-btn" title="Toggle Navigation Sidebar" aria-label="Toggle Navigation Sidebar">
+        <i data-lucide="panel-left" size="16"></i>
+      </button>
+      <a href="#top" class="brand-mark" onclick="event.preventDefault(); AppController.navigatePage(1);">
+        <span class="brand-accent-bar"></span>
+        <span>Financial Intelligence Suite</span>
+      </a>
+      <span class="sp500-badge" title="Illustrative market benchmark badge; not affiliated with or endorsed by S&P Dow Jones Indices">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="4" fill="#D6002A"/>
+          <path d="M6 15L10 10L13 13L18 7" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>S&amp;P 500 Benchmark Style</span>
+      </span>
+    </div>
+
+    <nav class="header-center" aria-label="Primary Report Pages">
+      <button class="page-tab-btn active" data-page="1" onclick="AppController.navigatePage(1)">1. Executive Overview</button>
+      <button class="page-tab-btn" data-page="2" id="tabPage2" onclick="AppController.navigatePage(2)">2. Primary Analysis</button>
+      <button class="page-tab-btn" data-page="3" id="tabPage3" onclick="AppController.navigatePage(3)">3. Secondary Analysis</button>
+      <button class="page-tab-btn" data-page="4" id="tabPage4" onclick="AppController.navigatePage(4)">4. Advanced Analysis</button>
+    </nav>
+
+    <div class="header-right">
+      <button id="btnThemeToggle" class="icon-btn" title="Toggle Light/Dark Theme" onclick="ThemeManager.toggle()">
+        <i data-lucide="moon" id="themeIcon" size="15"></i>
+        <span id="themeLabel">Dark</span>
+      </button>
+      <button id="btnToggleFilters" class="icon-btn" title="Toggle Global Filters" onclick="AppController.toggleFilterPanel()">
+        <i data-lucide="sliders-horizontal" size="15"></i>
+        <span>Filters</span>
+        <span class="badge-count" id="activeFilterCountBadge">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Three-Pane Shell -->
+  <div class="app-shell filter-collapsed" id="appShell">
+    <!-- Left Sidebar Navigation -->
+    <aside class="sidebar" aria-label="Workspace Navigation">
+      <div>
+        <div class="nav-section-title">Report Pages</div>
+        <div class="nav-list">
+          <button class="nav-item active" data-page="1" onclick="AppController.navigatePage(1)">
+            <span class="nav-item-left"><i data-lucide="layout-dashboard" size="15"></i><span class="nav-item-label">Executive Overview</span></span>
+            <span class="theme-pill">P1</span>
+          </button>
+          <button class="nav-item" data-page="2" onclick="AppController.navigatePage(2)">
+            <span class="nav-item-left"><i data-lucide="trending-up" size="15"></i><span class="nav-item-label" id="sidePage2Label">Primary Analysis</span></span>
+            <span class="theme-pill">P2</span>
+          </button>
+          <button class="nav-item" data-page="3" onclick="AppController.navigatePage(3)">
+            <span class="nav-item-left"><i data-lucide="pie-chart" size="15"></i><span class="nav-item-label" id="sidePage3Label">Secondary Analysis</span></span>
+            <span class="theme-pill">P3</span>
+          </button>
+          <button class="nav-item" data-page="4" onclick="AppController.navigatePage(4)">
+            <span class="nav-item-left"><i data-lucide="activity" size="15"></i><span class="nav-item-label" id="sidePage4Label">Advanced Analysis</span></span>
+            <span class="theme-pill">P4</span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-section-title">Sections &amp; Data</div>
+        <div class="nav-list">
+          <button class="nav-item" onclick="AppController.scrollToSection('execSummarySection')">
+            <span class="nav-item-left"><i data-lucide="file-text" size="15"></i><span class="nav-item-label">Executive Summary</span></span>
+          </button>
+          <button class="nav-item" onclick="OverlayManager.openDatasetInfo()">
+            <span class="nav-item-left"><i data-lucide="database" size="15"></i><span class="nav-item-label">Dataset &amp; Quality</span></span>
+          </button>
+          <button class="nav-item" onclick="OverlayManager.openFieldMapping()">
+            <span class="nav-item-left"><i data-lucide="git-branch" size="15"></i><span class="nav-item-label">Schema &amp; Field Map</span></span>
+          </button>
+          <button class="nav-item" onclick="OverlayManager.openBookmarks()">
+            <span class="nav-item-left"><i data-lucide="bookmark" size="15"></i><span class="nav-item-label">Bookmarks</span></span>
+            <span class="theme-pill" id="sidebarBookmarkCount">0</span>
+          </button>
+          <button class="nav-item" onclick="OverlayManager.openDrillThrough()">
+            <span class="nav-item-left"><i data-lucide="search-code" size="15"></i><span class="nav-item-label">Drill-Through View</span></span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="nav-section-title">Dataset Controls</div>
+        <div class="nav-list">
+          <button class="nav-item" onclick="document.getElementById('fileInput').click()">
+            <span class="nav-item-left"><i data-lucide="upload" size="15"></i><span class="nav-item-label">Upload / Replace File</span></span>
+          </button>
+          <button class="nav-item" onclick="IngestionModule.reprocess()">
+            <span class="nav-item-left"><i data-lucide="refresh-cw" size="15"></i><span class="nav-item-label">Reprocess Pipeline</span></span>
+          </button>
+          <button class="nav-item" onclick="IngestionModule.clearDataset()">
+            <span class="nav-item-left"><i data-lucide="trash-2" size="15"></i><span class="nav-item-label">Clear Dataset</span></span>
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top:auto; padding:10px; border-radius:var(--radius-sm); background:var(--bg-subtle); font-size:11.5px; color:var(--text-muted);">
+        <strong>Privacy &amp; Security:</strong> All parsing, cleaning, analytics, and exports run locally in your browser. No uploaded rows are sent externally.
+      </div>
+    </aside>
+
+    <!-- Center Analytical Canvas -->
+    <main class="main-canvas" id="mainCanvas" tabindex="-1">
+      <!-- Upload & Ingestion Card (Always accessible; prominent when no dataset is loaded) -->
+      <section class="section-card" id="ingestionSection">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title"><i data-lucide="folder-up" size="18" style="color:var(--brand-primary)"></i> Dataset Ingestion &amp; Pipeline Status</h2>
+            <p class="page-subtitle" id="datasetStatusText">No dataset loaded. Upload a CSV, XLS, or XLSX file to generate your four-page financial intelligence report.</p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <input type="file" id="fileInput" accept=".csv,.xls,.xlsx" style="display:none" onchange="IngestionModule.handleFileSelect(event)" />
+            <button class="action-btn primary" onclick="document.getElementById('fileInput').click()">
+              <i data-lucide="upload-cloud" size="15"></i> Browse File
+            </button>
+            <button class="action-btn" onclick="IngestionModule.loadSyntheticDemo()">
+              <i data-lucide="sparkles" size="15"></i> Generate Synthetic Test CSV
+            </button>
+            <button class="action-btn" id="btnReplaceFile" style="display:none" onclick="document.getElementById('fileInput').click()">
+              <i data-lucide="replace" size="15"></i> Replace
+            </button>
+            <button class="action-btn" id="btnReprocessFile" style="display:none" onclick="IngestionModule.reprocess()">
+              <i data-lucide="refresh-cw" size="15"></i> Reprocess
+            </button>
+            <button class="action-btn" id="btnClearFile" style="display:none" onclick="IngestionModule.clearDataset()">
+              <i data-lucide="x-circle" size="15"></i> Clear
+            </button>
+          </div>
+        </div>
+
+        <div id="dropZone" class="upload-dropzone"
+             ondragover="IngestionModule.handleDragOver(event)"
+             ondragleave="IngestionModule.handleDragLeave(event)"
+             ondrop="IngestionModule.handleDrop(event)"
+             onclick="if(!AppState.hasDataset) document.getElementById('fileInput').click()">
+          <i data-lucide="file-spreadsheet" size="30" style="color:var(--brand-primary); margin-bottom:6px;"></i>
+          <div style="font-weight:600; font-size:14px;">Drag &amp; drop CSV, XLS, or XLSX here, or click to browse</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Supports multi-sheet workbooks, currency formatting, date parsing, and dynamic schema detection (Max 50 MB).</div>
+        </div>
+
+        <div id="sheetSelectorBar" style="display:none; align-items:center; gap:10px; flex-wrap:wrap; background:var(--bg-subtle); padding:10px 12px; border-radius:var(--radius-sm);">
+          <label for="sheetSelect" style="font-weight:600; font-size:12.5px;">Workbook Worksheet:</label>
+          <select id="sheetSelect" class="filter-select" style="width:auto; min-width:200px;" onchange="IngestionModule.selectWorksheet(this.value)"></select>
+          <span id="sheetInfoLabel" style="font-size:12px; color:var(--text-muted);"></span>
+        </div>
+
+        <div id="pipelineFeedback" style="display:none; font-size:12.5px;"></div>
+      </section>
+
+      <!-- Active Report Page Container -->
+      <div id="reportWorkspace" style="display:none; flex-direction:column; gap:18px;">
+        <!-- Page Banner with Export Controls & Active Context -->
+        <div class="page-banner" id="exportCaptureTarget">
+          <div class="page-title-group">
+            <h1 id="reportPageTitle">
+              <span>Executive Overview</span>
+            </h1>
+            <p class="page-subtitle" id="reportPageObjective">Rapid understanding of financial performance, anomalies, and executive priorities.</p>
+            <div class="context-meta" id="activeContextChips"></div>
+          </div>
+
+          <div class="export-toolbar" aria-label="Page Export Controls">
+            <button class="action-btn" onclick="OverlayManager.openBookmarks()">
+              <i data-lucide="bookmark-plus" size="14"></i> Bookmarks
+            </button>
+            <button class="action-btn" onclick="OverlayManager.openDrillThrough()">
+              <i data-lucide="table-properties" size="14"></i> Drill-Through
+            </button>
+            <button class="action-btn" id="btnExportPdf" onclick="ExportManager.exportCurrentPagePDF()">
+              <i data-lucide="file-down" size="14"></i> Export PDF
+            </button>
+            <button class="action-btn primary" id="btnExportPptx" onclick="ExportManager.exportCurrentPagePPTX()">
+              <i data-lucide="presentation" size="14"></i> Export PowerPoint
+            </button>
+          </div>
+        </div>
+
+        <!-- Cross-Filter Banner -->
+        <div id="crossFilterBanner" style="display:none; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; background:var(--brand-soft); border:1px solid var(--brand-border); padding:10px 14px; border-radius:var(--radius-sm); font-size:12.5px;">
+          <span id="crossFilterText"><strong>Cross-Filter Active:</strong> ...</span>
+          <button class="mini-btn" onclick="InteractionEngine.clearCrossFilter()">Clear Chart Selection</button>
+        </div>
+
+        <!-- KPI Cards Row -->
+        <section class="kpi-grid" id="kpiGrid" aria-label="Key Performance Indicators"></section>
+
+        <!-- Dynamic Charts & Analytical Sections -->
+        <section id="pageChartsArea" style="display:flex; flex-direction:column; gap:16px;"></section>
+
+        <!-- Executive Summary & Ranked Insights (Prominently featured on Page 1 & accessible) -->
+        <section class="section-card" id="execSummarySection">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="lightbulb" size="18" style="color:var(--brand-primary)"></i> Executive Summary &amp; Evidence-Based Findings</h2>
+            <span class="meta-chip" id="insightTraceabilityBadge">Traceable to cleaned dataset</span>
+          </div>
+          <div id="executiveSummaryNarrative" style="font-size:13px; color:var(--text-secondary);"></div>
+          <div class="insight-grid" id="insightsGrid"></div>
+        </section>
+
+        <!-- Summary / Underlying Records Preview Table -->
+        <section class="section-card" id="summaryTableSection">
+          <div class="section-header">
+            <h2 class="section-title"><i data-lucide="table" size="18" style="color:var(--brand-primary)"></i> Analytical Breakdown &amp; Record Sample</h2>
+            <div style="display:flex; gap:8px;">
+              <button class="mini-btn" onclick="OverlayManager.openDataTable()">View Full Filtered Table</button>
+              <button class="mini-btn" onclick="OverlayManager.openDatasetInfo()">Data Quality Report</button>
+            </div>
+          </div>
+          <div class="table-wrap" id="pageSummaryTableWrap"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Right Global Filter Panel -->
+    <aside class="filter-panel" id="globalFilterPanel" aria-label="Global Filters">
+      <div class="filter-header">
+        <div style="display:flex; align-items:center; gap:6px; font-weight:700; font-size:14px;">
+          <i data-lucide="filter" size="15" style="color:var(--brand-primary)"></i>
+          <span>Global Slicers</span>
+        </div>
+        <button class="mini-btn" onclick="FilterEngine.resetAllFilters()">Reset All</button>
+      </div>
+
+      <div id="filterActiveSummary" style="font-size:11.5px; color:var(--text-muted);">No active filters applied.</div>
+      <div id="dynamicSlicersContainer" style="display:flex; flex-direction:column; gap:10px;">
+        <div style="font-size:12px; color:var(--text-muted);">Upload a dataset to generate dynamic global filters.</div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Custom Contextual Tooltip Panel -->
+  <div id="customTooltipPanel" class="custom-tooltip-panel" role="tooltip"></div>
+
+  <!-- Overlay Modal -->
+  <div id="overlayBackdrop" class="overlay-backdrop" role="dialog" aria-modal="true" aria-labelledby="overlayTitle" onkeydown="if(event.key==='Escape') OverlayManager.close()">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="overlayTitle" style="margin:0; font-size:16px; font-weight:700;">Overlay View</h3>
+        <button class="icon-btn" onclick="OverlayManager.close()" aria-label="Close Overlay">
+          <i data-lucide="x" size="16"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="overlayBody"></div>
+      <div class="modal-footer" id="overlayFooter">
+        <button class="action-btn" onclick="OverlayManager.close()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>Financial Intelligence Suite</strong> — Enterprise BI Web Application &bull; All calculations run locally in your browser.
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <span>S&amp;P 500 mark is illustrative only; no official affiliation implied.</span>
+      <a href="https://www.linkedin.com/in/moses-adebisi-79b6973a5/" target="_blank" rel="noopener noreferrer" class="linkedin-link" aria-label="Moses Adebisi on LinkedIn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M19 3A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H19M18.5 18.5V13.2A3.26 3.26 0 0 0 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17A1.4 1.4 0 0 1 15.71 13.57V18.5H18.5M6.88 8.56A1.68 1.68 0 0 0 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19A1.69 1.69 0 0 0 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56M8.27 18.5V10.13H5.5V18.5H8.27Z"/>
+        </svg>
+        <span>LinkedIn</span>
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    /**
+     * SINGLE CENTRALISED APPLICATION STATE
+     */
+    const AppState = {
+      hasDataset: false,
+      fileMeta: {
+        name: null,
+        size: 0,
+        type: null,
+        sheetNames: [],
+        selectedSheet: null,
+        uploadedAt: null,
+        isSyntheticDemo: false
+      },
+      rawRows: [],
+      cleanedRows: [],
+      analyticalRows: [],
+      columns: [],
+      schema: {
+        numeric: [],
+        date: [],
+        categorical: [],
+        text: [],
+        identifiers: [],
+        monetary: [],
+        percentage: [],
+        dimensions: [],
+        overrides: {} // { colName: { role, isMonetary, isPercentage, isDimension } }
+      },
+      currency: {
+        symbol: '',
+        code: '',
+        detectedFromData: false,
+        decimals: 2
+      },
+      profilingReport: null,
+      qualityReport: {
+        originalRows: 0,
+        cleanedRows: 0,
+        duplicateCount: 0,
+        missingCount: 0,
+        invalidCount: 0,
+        transformationLog: [],
+        warnings: []
+      },
+      supportedThemes: [],
+      selectedPageThemes: {
+        2: null,
+        3: null,
+        4: null
+      },
+      activePage: 1,
+      filters: {
+        globalCategorical: {}, // { col: Set/Array }
+        globalDateRanges: {}, // { col: { start: '', end: '' } }
+        pageFilters: {}, // { pageNum: { col: Set/Array } }
+        visualFilters: {} // { visualId: { col: val } }
+      },
+      crossFilter: null, // { sourceVisualId, field, value, label }
+      bookmarks: [],
+      drillThrough: {
+        dimension: null,
+        value: null,
+        records: []
+      },
+      theme: sessionStorage.getItem('fi_theme') || 'light',
+      chartInstances: {}
+    };
+
+    /**
+     * UTILITY & FORMATTING HELPERS
+     */
+    const FormatUtil = {
+      parseNumber(val) {
+        if (typeof val === 'number') return Number.isFinite(val) ? val : null;
+        if (val === null || val === undefined || val === '') return null;
+        let str = String(val).trim();
+        if (!str || /^(n\/a|na|null|none|-|—)$/i.test(str)) return null;
+        let isParenNeg = false;
+        if (/^\(.*\)$/.test(str)) {
+          isParenNeg = true;
+          str = str.slice(1, -1).trim();
+        }
+        str = str.replace(/[$€£¥₦₹,\s]/g, '');
+        const pct = str.endsWith('%');
+        if (pct) str = str.slice(0, -1);
+        const num = Number(str);
+        if (!Number.isFinite(num)) return null;
+        const signed = isParenNeg ? -Math.abs(num) : num;
+        return pct ? signed / 100 : signed;
+      },
+
+      detectCurrencySymbol(samples) {
+        const symbols = ['$', '€', '£', '¥', '₦', '₹'];
+        const counts = {};
+        for (const s of samples) {
+          if (typeof s !== 'string') continue;
+          for (const sym of symbols) {
+            if (s.includes(sym)) {
+              counts[sym] = (counts[sym] || 0) + 1;
+            }
+          }
+        }
+        let best = '';
+        let maxC = 0;
+        for (const [sym, c] of Object.entries(counts)) {
+          if (c > maxC) { maxC = c; best = sym; }
+        }
+        return best;
+      },
+
+      parseDate(val) {
+        if (val === null || val === undefined || val === '') return null;
+        if (val instanceof Date && !isNaN(val.getTime())) return val;
+        if (typeof val === 'number' && val > 20000 && val < 60000 && window.XLSX && XLSX.SSF) {
+          const d = XLSX.SSF.parse_date_code(val);
+          if (d && d.y && d.m && d.d) return new Date(Date.UTC(d.y, d.m - 1, d.d));
+        }
+        const str = String(val).trim();
+        if (!str || /^\d+(\.\d+)?$/.test(str)) return null;
+        const parsed = new Date(str);
+        if (!isNaN(parsed.getTime()) && parsed.getFullYear() >= 1970 && parsed.getFullYear() <= 2100) {
+          return parsed;
+        }
+        // Try DD/MM/YYYY or MM/DD/YYYY
+        const m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+        if (m) {
+          let a = parseInt(m[1], 10), b = parseInt(m[2], 10), y = parseInt(m[3], 10);
+          if (y < 100) y += 2000;
+          const month = a > 12 ? b : a;
+          const day = a > 12 ? a : b;
+          const dt = new Date(Date.UTC(y, month - 1, day));
+          if (!isNaN(dt.getTime())) return dt;
+        }
+        return null;
+      },
+
+      formatDateISO(dateObj) {
+        if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) return '';
+        return dateObj.toISOString().slice(0, 10);
+      },
+
+      formatNumber(val, decimals = 2) {
+        if (val === null || val === undefined || !Number.isFinite(val)) return 'N/A';
+        return new Intl.NumberFormat('en-US', {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals
+        }).format(val);
+      },
+
+      formatCompact(val, isMonetary = false) {
+        if (val === null || val === undefined || !Number.isFinite(val)) return 'N/A';
+        const sym = isMonetary ? (AppState.currency.symbol || '') : '';
+        const abs = Math.abs(val);
+        const sign = val < 0 ? '-' : '';
+        if (abs >= 1e9) return `${sign}${sym}${(abs / 1e9).toFixed(2)}B`;
+        if (abs >= 1e6) return `${sign}${sym}${(abs / 1e6).toFixed(2)}M`;
+        if (abs >= 1e3) return `${sign}${sym}${(abs / 1e3).toFixed(1)}K`;
+        return `${sign}${sym}${this.formatNumber(abs, isMonetary ? AppState.currency.decimals : 2)}`;
+      },
+
+      formatCurrency(val, decimals = null) {
+        if (val === null || val === undefined || !Number.isFinite(val)) return 'N/A';
+        const d = decimals !== null ? decimals : AppState.currency.decimals;
+        const sym = AppState.currency.symbol || '';
+        const sign = val < 0 ? '-' : '';
+        return `${sign}${sym}${this.formatNumber(Math.abs(val), d)}`;
+      },
+
+      formatPercent(val, decimals = 1) {
+        if (val === null || val === undefined || !Number.isFinite(val)) return 'N/A';
+        return `${this.formatNumber(val, decimals)}%`;
+      },
+
+      escapeHTML(str) {
+        return String(str ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      },
+
+      showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        if (type === 'error') el.style.borderLeftColor = '#DC2626';
+        if (type === 'success') el.style.borderLeftColor = '#15803D';
+        el.textContent = message;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.25s ease';
+          setTimeout(() => el.remove(), 250);
+        }, 3800);
+      }
+    };
+
+    /**
+     * THEME MANAGER
+     */
+    const ThemeManager = {
+      init() {
+        this.apply(AppState.theme, false);
+      },
+      toggle() {
+        const next = AppState.theme === 'light' ? 'dark' : 'light';
+        this.apply(next, true);
+      },
+      apply(theme, rerender = true) {
+        AppState.theme = theme;
+        sessionStorage.setItem('fi_theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+        if (icon) icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+        if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+        if (window.lucide) lucide.createIcons();
+        if (rerender && AppState.hasDataset) {
+          RenderEngine.renderCurrentPage();
+        }
+      },
+      getChartPalette() {
+        const isDark = AppState.theme === 'dark';
+        return {
+          text: isDark ? '#F8FAFC' : '#0F172A',
+          muted: isDark ? '#94A3B8' : '#475569',
+          grid: isDark ? 'rgba(148, 163, 184, 0.16)' : 'rgba(15, 23, 42, 0.08)',
+          surface: isDark ? '#111827' : '#FFFFFF',
+          primary: isDark ? '#FF2A55' : '#D6002A',
+          secondary: isDark ? '#38BDF8' : '#0284C7',
+          positive: isDark ? '#4ADE80' : '#15803D',
+          negative: isDark ? '#F87171' : '#B91C1C',
+          amber: isDark ? '#FBBF24' : '#B45309',
+          series: isDark
+            ? ['#FF2A55', '#38BDF8', '#4ADE80', '#FBBF24', '#A78BFA', '#FB7185']
+            : ['#D6002A', '#0284C7', '#15803D', '#B45309', '#6D28D9', '#0F766E']
+        };
+      }
+    };
+
+    /**
+     * PHASE 1: FILE INGESTION MODULE
+     */
+    const IngestionModule = {
+      workbook: null,
+      maxBytes: 50 * 1024 * 1024,
+
+      handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.add('dragover');
+      },
+
+      handleDragLeave(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.remove('dragover');
+      },
+
+      handleDrop(e) {
+        e.preventDefault();
+        document.getElementById('dropZone').classList.remove('dragover');
+        const files = e.dataTransfer?.files;
+        if (files && files.length > 0) {
+          this.processFile(files[0]);
+        }
+      },
+
+      handleFileSelect(e) {
+        const file = e.target.files?.[0];
+        if (file) this.processFile(file);
+        e.target.value = '';
+      },
+
+      processFile(file) {
+        const ext = (file.name.split('.').pop() || '').toLowerCase();
+        const validExts = ['csv', 'xls', 'xlsx'];
+        if (!validExts.includes(ext)) {
+          this.setFeedback('Unsupported file type. Please upload a .csv, .xls, or .xlsx file.', 'error');
+          FormatUtil.showToast('Invalid file type. Only CSV, XLS, and XLSX are supported.', 'error');
+          return;
+        }
+        if (file.size === 0) {
+          this.setFeedback('The selected file is empty (0 bytes). Please upload a file containing rows and headers.', 'error');
+          FormatUtil.showToast('Empty file rejected.', 'error');
+          return;
+        }
+        if (file.size > this.maxBytes) {
+          this.setFeedback('File exceeds the 50 MB client-side size limit.', 'error');
+          FormatUtil.showToast('File size exceeds 50 MB limit.', 'error');
+          return;
+        }
+        if (!window.XLSX) {
+          this.setFeedback('SheetJS (XLSX) library failed to load from CDN. Check network connectivity or reload.', 'error');
+          return;
+        }
+
+        this.setFeedback(`Reading "${file.name}" (${(file.size / 1024).toFixed(1)} KB)...`, 'info');
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          try {
+            const data = new Uint8Array(evt.target.result);
+            const wb = XLSX.read(data, { type: 'array', cellDates: false });
+            if (!wb.SheetNames || wb.SheetNames.length === 0) {
+              this.setFeedback('No worksheets found inside the file.', 'error');
+              return;
+            }
+            this.workbook = wb;
+            AppState.fileMeta = {
+              name: file.name,
+              size: file.size,
+              type: ext.toUpperCase(),
+              sheetNames: wb.SheetNames,
+              selectedSheet: wb.SheetNames[0],
+              uploadedAt: new Date().toISOString(),
+              isSyntheticDemo: false
+            };
+
+            const sheetBar = document.getElementById('sheetSelectorBar');
+            const sheetSelect = document.getElementById('sheetSelect');
+            if (wb.SheetNames.length > 1) {
+              sheetSelect.innerHTML = wb.SheetNames.map(s => `<option value="${FormatUtil.escapeHTML(s)}">${FormatUtil.escapeHTML(s)}</option>`).join('');
+              sheetBar.style.display = 'flex';
+            } else {
+              sheetBar.style.display = 'none';
+            }
+
+            this.loadSheetData(wb.SheetNames[0]);
+          } catch (err) {
+            this.setFeedback(`Failed to parse workbook: ${err.message}`, 'error');
+            FormatUtil.showToast('Error parsing file.', 'error');
+          }
+        };
+        reader.onerror = () => {
+          this.setFeedback('FileReader encountered an error reading the file.', 'error');
+        };
+        reader.readAsArrayBuffer(file);
+      },
+
+      selectWorksheet(sheetName) {
+        if (!this.workbook) return;
+        AppState.fileMeta.selectedSheet = sheetName;
+        this.loadSheetData(sheetName);
+      },
+
+      loadSheetData(sheetName) {
+        const ws = this.workbook.Sheets[sheetName];
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        if (!rows || rows.length === 0) {
+          this.setFeedback(`Worksheet "${sheetName}" contains no data rows.`, 'error');
+          return;
+        }
+        const cols = Object.keys(rows[0] || {});
+        if (cols.length === 0) {
+          this.setFeedback(`Worksheet "${sheetName}" has no column headers.`, 'error');
+          return;
+        }
+
+        document.getElementById('sheetInfoLabel').textContent = `${rows.length.toLocaleString()} rows × ${cols.length} columns`;
+        this.runFullPipeline(rows, cols);
+      },
+
+      loadSyntheticDemo() {
+        // Synthetic test dataset generated purely in memory for quick demonstration (not real hardcoded financial figures)
+        const departments = ['Enterprise Sales', 'Cloud Platform', 'Operations', 'Marketing', 'Finance & Legal'];
+        const categories = ['Software Subscriptions', 'Professional Services', 'Cloud Infrastructure', 'Personnel & Benefits', 'Vendor & Advisory'];
+        const regions = ['North America', 'EMEA', 'APAC', 'LATAM'];
+        const rows = [];
+        for (let i = 0; i < 180; i++) {
+          const monthIdx = i % 12;
+          const year = i < 90 ? 2025 : 2026;
+          const monthStr = String(monthIdx + 1).padStart(2, '0');
+          const dayStr = String((i % 25) + 1).padStart(2, '0');
+          const dept = departments[i % departments.length];
+          const cat = categories[(i + monthIdx) % categories.length];
+          const reg = regions[(i * 3) % regions.length];
+          const isRev = i % 3 !== 2;
+          const baseAmt = isRev ? (42000 + ((i * 3719) % 55000)) : (24000 + ((i * 2131) % 32000));
+          const budgetAmt = Math.round(baseAmt * (0.92 + ((i % 9) * 0.02)));
+          rows.push({
+            Transaction_ID: `TXN-${year}-${String(i + 1001)}`,
+            Posting_Date: `${year}-${monthStr}-${dayStr}`,
+            Department: dept,
+            Category: cat,
+            Region: reg,
+            Flow_Type: isRev ? 'Revenue' : 'Operating Expense',
+            Revenue: isRev ? baseAmt : 0,
+            Expenses: isRev ? Math.round(baseAmt * 0.58) : baseAmt,
+            Budget_Amount: budgetAmt
+          });
+        }
+        AppState.fileMeta = {
+          name: 'synthetic_financial_ledger_demo.csv',
+          size: JSON.stringify(rows).length,
+          type: 'CSV (SYNTHETIC DEMO)',
+          sheetNames: ['Ledger'],
+          selectedSheet: 'Ledger',
+          uploadedAt: new Date().toISOString(),
+          isSyntheticDemo: true
+        };
+        document.getElementById('sheetSelectorBar').style.display = 'none';
+        this.runFullPipeline(rows, Object.keys(rows[0]));
+      },
+
+      reprocess() {
+        if (!AppState.hasDataset || !AppState.rawRows.length) {
+          FormatUtil.showToast('No dataset available to reprocess.', 'error');
+          return;
+        }
+        this.runFullPipeline(AppState.rawRows, AppState.columns, true);
+        FormatUtil.showToast('Pipeline reprocessed from raw dataset.', 'success');
+      },
+
+      clearDataset() {
+        AppState.hasDataset = false;
+        AppState.rawRows = [];
+        AppState.cleanedRows = [];
+        AppState.analyticalRows = [];
+        AppState.columns = [];
+        AppState.schema = {
+          numeric: [], date: [], categorical: [], text: [],
+          identifiers: [], monetary: [], percentage: [], dimensions: [], overrides: {}
+        };
+        AppState.filters = { globalCategorical: {}, globalDateRanges: {}, pageFilters: {}, visualFilters: {} };
+        AppState.crossFilter = null;
+        AppState.bookmarks = [];
+        AppState.activePage = 1;
+
+        Object.values(AppState.chartInstances).forEach(inst => {
+          if (inst && typeof inst.destroy === 'function') inst.destroy();
+        });
+        AppState.chartInstances = {};
+
+        document.getElementById('reportWorkspace').style.display = 'none';
+        document.getElementById('dropZone').style.display = 'block';
+        document.getElementById('sheetSelectorBar').style.display = 'none';
+        document.getElementById('btnReplaceFile').style.display = 'none';
+        document.getElementById('btnReprocessFile').style.display = 'none';
+        document.getElementById('btnClearFile').style.display = 'none';
+        document.getElementById('datasetStatusText').textContent = 'No dataset loaded. Upload a CSV, XLS, or XLSX file to generate your four-page financial intelligence report.';
+        document.getElementById('dynamicSlicersContainer').innerHTML = '<div style="font-size:12px; color:var(--text-muted);">Upload a dataset to generate dynamic global filters.</div>';
+        this.setFeedback('Dataset cleared from memory.', 'info');
+        FilterEngine.updateFilterBadges();
+      },
+
+      setFeedback(msg, level = 'info') {
+        const el = document.getElementById('pipelineFeedback');
+        el.style.display = 'block';
+        const color = level === 'error' ? 'var(--status-neg)' : (level === 'success' ? 'var(--status-pos)' : 'var(--text-secondary)');
+        el.innerHTML = `<span style="color:${color}; font-weight:600;">${FormatUtil.escapeHTML(msg)}</span>`;
+      },
+
+      runFullPipeline(rawRows, columns, keepOverrides = false) {
+        // Preserve raw rows untouched
+        AppState.rawRows = rawRows.map(r => ({ ...r }));
+        AppState.columns = [...columns];
+        AppState.hasDataset = true;
+        if (!keepOverrides) {
+          AppState.schema.overrides = {};
+          AppState.filters = { globalCategorical: {}, globalDateRanges: {}, pageFilters: {}, visualFilters: {} };
+          AppState.crossFilter = null;
+        }
+
+        // Phase 2 & 3: Schema Detection & Profiling
+        SchemaModule.detectSchema(AppState.rawRows, AppState.columns);
+        ProfilingModule.profileDataset(AppState.rawRows, AppState.columns);
+
+        // Phase 3b: Cleaning & Transformation
+        ETLModule.cleanAndTransform();
+
+        // Phase 4 & 5: Financial Theme Discovery & KPI Engine
+        FinancialEngine.discoverThemesAndKPIs();
+
+        // Update UI controls
+        document.getElementById('dropZone').style.display = 'none';
+        document.getElementById('btnReplaceFile').style.display = 'inline-flex';
+        document.getElementById('btnReprocessFile').style.display = 'inline-flex';
+        document.getElementById('btnClearFile').style.display = 'inline-flex';
+        document.getElementById('reportWorkspace').style.display = 'flex';
+        document.getElementById('datasetStatusText').textContent =
+          `Loaded "${AppState.fileMeta.name}" (${AppState.fileMeta.selectedSheet}) — ${AppState.cleanedRows.length.toLocaleString()} cleaned records across ${AppState.columns.length} columns.`;
+
+        this.setFeedback(
+          `Pipeline complete: ${AppState.supportedThemes.length} financial themes detected; ${AppState.schema.monetary.length} monetary & ${AppState.schema.numeric.length} numeric fields mapped.`,
+          'success'
+        );
+
+        FilterEngine.buildGlobalSlicers();
+        AppController.updateNavigationLabels();
+        AppController.navigatePage(AppState.activePage || 1);
+        FormatUtil.showToast('Dataset profiled, cleaned, and rendered across 4 report pages.', 'success');
+      }
+    };
+
+    /**
+     * PHASE 2 & 3: SCHEMA DETECTION & PROFILING
+     */
+    const SchemaModule = {
+      detectSchema(rows, columns) {
+        const schema = {
+          numeric: [],
+          date: [],
+          categorical: [],
+          text: [],
+          identifiers: [],
+          monetary: [],
+          percentage: [],
+          dimensions: [],
+          overrides: AppState.schema.overrides || {}
+        };
+
+        const sampleLimit = Math.min(rows.length, 500);
+        const allCurrencySymbols = [];
+
+        for (const col of columns) {
+          const lower = col.toLowerCase();
+          const samples = [];
+          for (let i = 0; i < sampleLimit; i++) {
+            const v = rows[i][col];
+            if (v !== null && v !== undefined && String(v).trim() !== '') {
+              samples.push(v);
+            }
+          }
+
+          let numCount = 0;
+          let dateCount = 0;
+          let pctHints = 0;
+          let currHints = 0;
+          const uniqueSet = new Set();
+
+          for (const s of samples) {
+            const str = String(s).trim();
+            uniqueSet.add(str);
+            if (str.includes('%')) pctHints++;
+            if (/[$€£¥₦₹]/.test(str)) {
+              currHints++;
+              allCurrencySymbols.push(str);
+            }
+            if (FormatUtil.parseDate(s) !== null) dateCount++;
+            if (FormatUtil.parseNumber(s) !== null) numCount++;
+          }
+
+          const nonEmpty = samples.length || 1;
+          const numRatio = numCount / nonEmpty;
+          const dateRatio = dateCount / nonEmpty;
+          const uniqueRatio = uniqueSet.size / nonEmpty;
+
+          let type = 'text';
+          if (dateRatio >= 0.75 && numRatio < 0.9) {
+            type = 'date';
+          } else if (numRatio >= 0.75) {
+            type = 'numeric';
+          } else if (uniqueSet.size <= Math.max(25, Math.floor(nonEmpty * 0.25)) || uniqueRatio < 0.35) {
+            type = 'categorical';
+          }
+
+          const isId = /(^id$|_id$|^uuid$|^code$|invoice_no|txn_id|order_id)/i.test(lower) || (type === 'text' && uniqueRatio > 0.85);
+          const isMonetaryKeyword = /(revenue|sales|income|expense|cost|cogs|profit|margin|ebitda|cash|budget|forecast|actual|variance|price|amount|fee|tax|asset|liability|equity|spend|payment|invoice)/i.test(lower);
+          const isPctKeyword = /(pct|percent|rate|ratio|margin_pct|growth|yield|share)/i.test(lower);
+          const isDimensionKeyword = /(department|dept|division|region|country|city|category|sub_?category|product|sku|item|customer|client|account|channel|segment|vendor|cost_center|period|year|quarter|month)/i.test(lower);
+
+          // Apply manual override if present
+          const ov = schema.overrides[col];
+          if (ov && ov.role) {
+            type = ov.role;
+          }
+
+          if (type === 'date') {
+            schema.date.push(col);
+          } else if (type === 'numeric') {
+            schema.numeric.push(col);
+            const isMon = ov?.isMonetary !== undefined ? ov.isMonetary : (!isId && (currHints > 0 || (isMonetaryKeyword && !isPctKeyword)));
+            const isPct = ov?.isPercentage !== undefined ? ov.isPercentage : (!isId && (pctHints > 0 || isPctKeyword));
+            if (isMon) schema.monetary.push(col);
+            if (isPct) schema.percentage.push(col);
+            if (isId) schema.identifiers.push(col);
+          } else if (type === 'categorical') {
+            schema.categorical.push(col);
+            if (!isId) schema.dimensions.push(col);
+          } else {
+            schema.text.push(col);
+            if (isId) schema.identifiers.push(col);
+            else if (isDimensionKeyword && uniqueSet.size <= 100) schema.dimensions.push(col);
+          }
+        }
+
+        const detectedSym = FormatUtil.detectCurrencySymbol(allCurrencySymbols);
+        AppState.currency = {
+          symbol: AppState.currency.symbol && AppState.currency.manual ? AppState.currency.symbol : detectedSym,
+          code: detectedSym === '$' ? 'USD' : detectedSym === '€' ? 'EUR' : detectedSym === '£' ? 'GBP' : detectedSym === '₦' ? 'NGN' : '',
+          detectedFromData: Boolean(detectedSym),
+          decimals: 2,
+          manual: Boolean(AppState.currency.manual)
+        };
+
+        AppState.schema = schema;
+      }
+    };
+
+    const ProfilingModule = {
+      profileDataset(rows, columns) {
+        const totalRows = rows.length;
+        const totalCols = columns.length;
+        const seenRowHashes = new Set();
+        let duplicateCount = 0;
+        let missingCount = 0;
+
+        for (const r of rows) {
+          const sig = columns.map(c => String(r[c] ?? '').trim()).join('||');
+          if (seenRowHashes.has(sig)) duplicateCount++;
+          else seenRowHashes.add(sig);
+        }
+
+        const colProfiles = columns.map(col => {
+          let missing = 0;
+          const distinct = new Set();
+          const nums = [];
+          const dates = [];
+          const catFreq = {};
+          let inconsistentFormats = 0;
+
+          for (const r of rows) {
+            const raw = r[col];
+            const str = raw === null || raw === undefined ? '' : String(raw).trim();
+            if (str === '' || /^(n\/a|na|null|none)$/i.test(str)) {
+              missing++;
+              missingCount++;
+              continue;
+            }
+            distinct.add(str);
+            if (AppState.schema.numeric.includes(col)) {
+              const n = FormatUtil.parseNumber(raw);
+              if (n === null) inconsistentFormats++;
+              else nums.push(n);
+            } else if (AppState.schema.date.includes(col)) {
+              const d = FormatUtil.parseDate(raw);
+              if (d === null) inconsistentFormats++;
+              else dates.push(d);
+            } else {
+              catFreq[str] = (catFreq[str] || 0) + 1;
+            }
+          }
+
+          let minVal = null, maxVal = null, meanVal = null, medianVal = null, outliersCount = 0;
+          if (nums.length > 0) {
+            const sorted = [...nums].sort((a, b) => a - b);
+            minVal = sorted[0];
+            maxVal = sorted[sorted.length - 1];
+            meanVal = nums.reduce((a, b) => a + b, 0) / nums.length;
+            const mid = Math.floor(sorted.length / 2);
+            medianVal = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+
+            const q1 = sorted[Math.floor(sorted.length * 0.25)];
+            const q3 = sorted[Math.floor(sorted.length * 0.75)];
+            const iqr = q3 - q1;
+            const lowFence = q1 - 1.5 * iqr;
+            const highFence = q3 + 1.5 * iqr;
+            outliersCount = nums.filter(x => x < lowFence || x > highFence).length;
+          }
+
+          let dateRange = null;
+          if (dates.length > 0) {
+            const dSorted = [...dates].sort((a, b) => a.getTime() - b.getTime());
+            dateRange = `${FormatUtil.formatDateISO(dSorted[0])} to ${FormatUtil.formatDateISO(dSorted[dSorted.length - 1])}`;
+          }
+
+          const topCategories = Object.entries(catFreq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5);
+
+          return {
+            column: col,
+            inferredType: AppState.schema.date.includes(col) ? 'Date'
+              : AppState.schema.numeric.includes(col) ? (AppState.schema.monetary.includes(col) ? 'Monetary Numeric' : AppState.schema.percentage.includes(col) ? 'Percentage Numeric' : 'Numeric')
+              : AppState.schema.categorical.includes(col) ? 'Categorical' : 'Text/ID',
+            uniqueCount: distinct.size,
+            missingCount: missing,
+            minVal,
+            maxVal,
+            meanVal,
+            medianVal,
+            outliersCount,
+            dateRange,
+            inconsistentFormats,
+            topCategories
+          };
+        });
+
+        AppState.profilingReport = {
+          totalRows,
+          totalCols,
+          duplicateCount,
+          missingCount,
+          colProfiles
+        };
+      }
+    };
+
+    /**
+     * PHASE 3b: DATA CLEANING & TRANSFORMATION
+     */
+    const ETLModule = {
+      cleanAndTransform() {
+        const log = [];
+        const warnings = [];
+        const seenHashes = new Set();
+        let dupCount = 0;
+        let missingCells = 0;
+        let invalidCells = 0;
+
+        const cleaned = [];
+        const primaryDateCol = AppState.schema.date[0] || null;
+
+        AppState.rawRows.forEach((rawRow, idx) => {
+          const sig = AppState.columns.map(c => String(rawRow[c] ?? '').trim()).join('||');
+          const isDup = seenHashes.has(sig);
+          if (isDup) dupCount++;
+          else seenHashes.add(sig);
+
+          const cleanRow = {
+            _rowIndex: idx + 1,
+            _isDuplicate: isDup,
+            _hasInvalid: false
+          };
+
+          for (const col of AppState.columns) {
+            const val = rawRow[col];
+            const str = val === null || val === undefined ? '' : String(val).trim();
+
+            if (AppState.schema.numeric.includes(col)) {
+              if (str === '' || /^(n\/a|na|null|none|-|—)$/i.test(str)) {
+                missingCells++;
+                cleanRow[col] = null;
+              } else {
+                const parsed = FormatUtil.parseNumber(val);
+                if (parsed === null) {
+                  invalidCells++;
+                  cleanRow._hasInvalid = true;
+                  cleanRow[col] = null;
+                } else {
+                  cleanRow[col] = parsed;
+                }
+              }
+            } else if (AppState.schema.date.includes(col)) {
+              if (str === '') {
+                missingCells++;
+                cleanRow[col] = null;
+              } else {
+                const dt = FormatUtil.parseDate(val);
+                if (!dt) {
+                  invalidCells++;
+                  cleanRow._hasInvalid = true;
+                  cleanRow[col] = null;
+                } else {
+                  cleanRow[col] = FormatUtil.formatDateISO(dt);
+                }
+              }
+            } else {
+              if (str === '' || /^(n\/a|na|null|none)$/i.test(str)) {
+                missingCells++;
+                cleanRow[col] = 'Unspecified';
+              } else {
+                // Normalize internal whitespace while preserving valid casing
+                cleanRow[col] = str.replace(/\s+/g, ' ');
+              }
+            }
+          }
+
+          // Never silently drop valid financial records; keep all rows in cleanedRows with flags
+          cleaned.push(cleanRow);
+        });
+
+        log.push(`Preserved all ${AppState.rawRows.length} raw records; standardized ${AppState.schema.numeric.length} numeric fields and ${AppState.schema.date.length} date fields.`);
+        if (dupCount > 0) {
+          log.push(`Flagged ${dupCount} exact duplicate record(s) without silent deletion.`);
+          warnings.push(`${dupCount} duplicate row(s) detected; verify whether transactions are legitimate repeats or accidental duplicates.`);
+        }
+        if (missingCells > 0) {
+          log.push(`Recorded ${missingCells} missing field value(s); categorical blanks labeled "Unspecified", numeric/date blanks set to null.`);
+          warnings.push(`${missingCells} missing value(s) found across dataset.`);
+        }
+        if (invalidCells > 0) {
+          log.push(`Flagged ${invalidCells} unparseable numeric/date cell(s) as null to prevent calculation distortion.`);
+          warnings.push(`${invalidCells} format/parsing anomaly cell(s) encountered.`);
+        }
+
+        // Derived Analytical Columns (only when justified by source columns)
+        const analytical = cleaned.map(row => {
+          const derived = { ...row };
+          if (primaryDateCol && row[primaryDateCol]) {
+            const dt = FormatUtil.parseDate(row[primaryDateCol]);
+            if (dt) {
+              const y = dt.getUTCFullYear();
+              const m = dt.getUTCMonth() + 1;
+              const q = Math.floor((m - 1) / 3) + 1;
+              derived._Year = String(y);
+              derived._Quarter = `Q${q} ${y}`;
+              derived._Month = `${y}-${String(m).padStart(2, '0')}`;
+              derived._PeriodSort = y * 100 + m;
+            }
+          }
+
+          // Profit & Margin if revenue-like and expense-like columns exist
+          const revCol = FinancialEngine.findColumnByPattern(/(revenue|sales|income|turnover)/i);
+          const expCol = FinancialEngine.findColumnByPattern(/(expense|cost|cogs|spend|outflow)/i);
+          if (revCol && expCol && typeof derived[revCol] === 'number' && typeof derived[expCol] === 'number') {
+            derived._Net_Calculated = derived[revCol] - derived[expCol];
+            derived._Margin_Pct = derived[revCol] !== 0 ? ((derived[revCol] - derived[expCol]) / Math.abs(derived[revCol])) * 100 : null;
+          }
+
+          // Variance if actual/amount and budget/target columns exist
+          const budCol = FinancialEngine.findColumnByPattern(/(budget|target|plan|forecast)/i);
+          const actCol = FinancialEngine.findColumnByPattern(/(actual|amount|revenue|total)/i);
+          if (budCol && actCol && budCol !== actCol && typeof derived[budCol] === 'number' && typeof derived[actCol] === 'number') {
+            derived._Budget_Variance = derived[actCol] - derived[budCol];
+            derived._Budget_Var_Pct = derived[budCol] !== 0 ? ((derived[actCol] - derived[budCol]) / Math.abs(derived[budCol])) * 100 : null;
+          }
+
+          return derived;
+        });
+
+        if (primaryDateCol) {
+          log.push(`Derived time-series columns (_Year, _Quarter, _Month) from date field "${primaryDateCol}".`);
+        }
+
+        AppState.cleanedRows = cleaned;
+        AppState.analyticalRows = analytical;
+        AppState.qualityReport = {
+          originalRows: AppState.rawRows.length,
+          cleanedRows: cleaned.length,
+          duplicateCount: dupCount,
+          missingCount: missingCells,
+          invalidCount: invalidCells,
+          transformationLog: log,
+          warnings
+        };
+      }
+    };
+
+    /**
+     * PHASE 4 & 5: FINANCIAL THEME DISCOVERY, KPI ENGINE & ANALYTICAL INTELLIGENCE
+     */
+    const FinancialEngine = {
+      findColumnByPattern(regex, pool = null) {
+        const candidates = pool || [...AppState.schema.monetary, ...AppState.schema.numeric];
+        for (const col of candidates) {
+          if (regex.test(col.toLowerCase())) return col;
+        }
+        return null;
+      },
+
+      discoverThemesAndKPIs() {
+        const numCols = AppState.schema.numeric;
+        const monCols = AppState.schema.monetary;
+        const dimCols = AppState.schema.dimensions;
+        const dateCols = AppState.schema.date;
+
+        const hasRev = Boolean(this.findColumnByPattern(/(revenue|sales|income|turnover)/i, numCols));
+        const hasExp = Boolean(this.findColumnByPattern(/(expense|cost|cogs|spend|outflow)/i, numCols));
+        const hasProfit = Boolean(this.findColumnByPattern(/(profit|net_income|ebitda|earnings|margin)/i, numCols));
+        const hasCash = Boolean(this.findColumnByPattern(/(cash|liquidity|inflow|outflow|balance)/i, numCols));
+        const hasBudget = Boolean(this.findColumnByPattern(/(budget|target|plan|forecast)/i, numCols));
+        const hasVariance = Boolean(this.findColumnByPattern(/(variance|diff|delta)/i, numCols)) || (hasBudget && numCols.length >= 2);
+        const hasAssetLiab = Boolean(this.findColumnByPattern(/(asset|liability|equity|debt)/i, numCols));
+        const hasDept = Boolean(this.findColumnByPattern(/(dept|department|division|cost_center)/i, [...dimCols, ...AppState.schema.categorical]));
+        const hasProd = Boolean(this.findColumnByPattern(/(product|sku|item|service|category)/i, [...dimCols, ...AppState.schema.categorical]));
+        const hasCust = Boolean(this.findColumnByPattern(/(customer|client|account|segment)/i, [...dimCols, ...AppState.schema.categorical]));
+
+        const themes = [];
+        const addTheme = (id, name, score, focus, reason) => {
+          if (score > 0) themes.push({ id, name, score, focus, reason });
+        };
+
+        addTheme('revenue', 'Revenue Performance', (hasRev ? 95 : 0) + (monCols.length > 0 ? 15 : 0), 'revenue', 'Revenue/sales metric and dimension structure available.');
+        addTheme('profitability', 'Profitability & Margins', (hasProfit ? 90 : 0) + (hasRev && hasExp ? 85 : 0), 'profitability', 'Profitability or revenue-vs-expense structure detected.');
+        addTheme('expenses', 'Expenses & Cost Structure', (hasExp ? 88 : 0) + (monCols.length >= 2 ? 10 : 0), 'expenses', 'Expense/cost columns available for breakdown and concentration analysis.');
+        addTheme('budget_variance', 'Budget vs. Actual & Variance', (hasBudget || hasVariance ? 86 : 0), 'variance', 'Budget/forecast or variance fields available.');
+        addTheme('cash_flow', 'Cash Flow & Liquidity', (hasCash ? 84 : 0), 'cash', 'Cash or flow fields available.');
+        addTheme('departmental', 'Departmental Performance', (hasDept && numCols.length > 0 ? 80 : 0), 'departmental', 'Department/cost-center dimension detected.');
+        addTheme('product', 'Product & Category Performance', (hasProd && numCols.length > 0 ? 78 : 0), 'product', 'Product/category dimension detected.');
+        addTheme('customer', 'Customer & Segment Analysis', (hasCust && numCols.length > 0 ? 76 : 0), 'customer', 'Customer/segment dimension detected.');
+        addTheme('trends', 'Financial Trends & Time Series', (dateCols.length > 0 && numCols.length > 0 ? 74 : 0), 'trends', 'Date column and numeric financial measures detected.');
+        addTheme('transactions', 'Transaction & Numeric Analysis', (numCols.length > 0 ? 60 : 0), 'transactions', 'Numeric measures available for distribution and outlier analysis.');
+        addTheme('balance_sheet', 'Assets, Liabilities & Capital', (hasAssetLiab ? 72 : 0), 'balance', 'Asset/liability/equity fields detected.');
+
+        themes.sort((a, b) => b.score - a.score);
+        if (themes.length === 0) {
+          themes.push({ id: 'transactions', name: 'Dataset Metric Overview', score: 50, focus: 'transactions', reason: 'General numeric profiling.' });
+        }
+
+        AppState.supportedThemes = themes;
+        AppState.selectedPageThemes = {
+          2: themes[0],
+          3: themes[1] || themes[0],
+          4: themes[2] || themes[1] || themes[0]
+        };
+      },
+
+      computeFilteredMetrics(rows) {
+        const numCols = AppState.schema.numeric;
+        const revCol = this.findColumnByPattern(/(revenue|sales|income|turnover)/i, numCols);
+        const expCol = this.findColumnByPattern(/(expense|cost|cogs|spend|outflow)/i, numCols);
+        const profCol = this.findColumnByPattern(/(profit|net_income|ebitda|earnings)/i, numCols);
+        const budCol = this.findColumnByPattern(/(budget|target|plan|forecast)/i, numCols);
+        const cashCol = this.findColumnByPattern(/(cash|liquidity|net_cash)/i, numCols);
+
+        const sumCol = (col) => {
+          if (!col) return null;
+          let s = 0;
+          let count = 0;
+          for (const r of rows) {
+            if (typeof r[col] === 'number' && Number.isFinite(r[col])) {
+              s += r[col];
+              count++;
+            }
+          }
+          return count > 0 ? s : null;
+        };
+
+        const totalRev = sumCol(revCol);
+        const totalExp = sumCol(expCol);
+        const explicitProfit = sumCol(profCol);
+        const derivedProfit = (totalRev !== null && totalExp !== null) ? (totalRev - totalExp) : null;
+        const netProfit = explicitProfit !== null ? explicitProfit : derivedProfit;
+        const marginPct = (netProfit !== null && totalRev !== null && totalRev !== 0) ? (netProfit / Math.abs(totalRev)) * 100 : null;
+        const totalBudget = sumCol(budCol);
+        const primaryMetricCol = revCol || numCols[0] || null;
+        const primaryTotal = sumCol(primaryMetricCol);
+        const avgTxn = (primaryTotal !== null && rows.length > 0) ? (primaryTotal / rows.length) : null;
+        const budgetVariance = (totalBudget !== null && primaryTotal !== null) ? (primaryTotal - totalBudget) : null;
+        const budgetVarPct = (budgetVariance !== null && totalBudget !== null && totalBudget !== 0) ? (budgetVariance / Math.abs(totalBudget)) * 100 : null;
+        const cashTotal = sumCol(cashCol);
+
+        // Time-series aggregation if _Month exists
+        const monthMap = new Map();
+        for (const r of rows) {
+          if (!r._Month) continue;
+          if (!monthMap.has(r._Month)) {
+            monthMap.set(r._Month, { period: r._Month, sortKey: r._PeriodSort || 0, primary: 0, rev: 0, exp: 0, bud: 0, count: 0 });
+          }
+          const mObj = monthMap.get(r._Month);
+          if (primaryMetricCol && typeof r[primaryMetricCol] === 'number') mObj.primary += r[primaryMetricCol];
+          if (revCol && typeof r[revCol] === 'number') mObj.rev += r[revCol];
+          if (expCol && typeof r[expCol] === 'number') mObj.exp += r[expCol];
+          if (budCol && typeof r[budCol] === 'number') mObj.bud += r[budCol];
+          mObj.count++;
+        }
+        const timeSeries = Array.from(monthMap.values()).sort((a, b) => a.sortKey - b.sortKey);
+
+        // Latest vs previous period MoM growth
+        let momGrowthPct = null;
+        if (timeSeries.length >= 2) {
+          const prev = timeSeries[timeSeries.length - 2].primary;
+          const curr = timeSeries[timeSeries.length - 1].primary;
+          if (prev !== 0) momGrowthPct = ((curr - prev) / Math.abs(prev)) * 100;
+        }
+
+        // KPI Cards list (strictly only when required fields exist)
+        const kpis = [];
+        if (revCol && totalRev !== null) {
+          kpis.push({
+            id: 'total_revenue',
+            label: `Total ${revCol}`,
+            value: FormatUtil.formatCompact(totalRev, AppState.schema.monetary.includes(revCol)),
+            fullValue: FormatUtil.formatCurrency(totalRev),
+            formula: `SUM(${revCol})`,
+            sourceCols: [revCol],
+            deltaPct: momGrowthPct,
+            deltaLabel: momGrowthPct !== null ? `${momGrowthPct >= 0 ? '+' : ''}${momGrowthPct.toFixed(1)}% vs prior period` : 'Single/unperiodized scope',
+            favorable: momGrowthPct === null ? null : momGrowthPct >= 0
+          });
+        }
+        if (expCol && totalExp !== null) {
+          kpis.push({
+            id: 'total_expenses',
+            label: `Total ${expCol}`,
+            value: FormatUtil.formatCompact(totalExp, AppState.schema.monetary.includes(expCol)),
+            fullValue: FormatUtil.formatCurrency(totalExp),
+            formula: `SUM(${expCol})`,
+            sourceCols: [expCol],
+            deltaPct: null,
+            deltaLabel: 'Expense aggregation',
+            favorable: null
+          });
+        }
+        if (netProfit !== null) {
+          kpis.push({
+            id: 'net_profit',
+            label: explicitProfit !== null ? `Total ${profCol}` : `Net Margin (${revCol} - ${expCol})`,
+            value: FormatUtil.formatCompact(netProfit, true),
+            fullValue: FormatUtil.formatCurrency(netProfit),
+            formula: explicitProfit !== null ? `SUM(${profCol})` : `SUM(${revCol}) - SUM(${expCol})`,
+            sourceCols: explicitProfit !== null ? [profCol] : [revCol, expCol],
+            deltaPct: marginPct,
+            deltaLabel: marginPct !== null ? `${marginPct.toFixed(1)}% weighted margin` : 'Margin N/A (0 denom)',
+            favorable: netProfit >= 0
+          });
+        }
+        if (budgetVariance !== null) {
+          kpis.push({
+            id: 'budget_variance',
+            label: `Variance vs ${budCol}`,
+            value: FormatUtil.formatCompact(budgetVariance, true),
+            fullValue: FormatUtil.formatCurrency(budgetVariance),
+            formula: `SUM(${primaryMetricCol}) - SUM(${budCol})`,
+            sourceCols: [primaryMetricCol, budCol],
+            deltaPct: budgetVarPct,
+            deltaLabel: budgetVarPct !== null ? `${budgetVarPct >= 0 ? '+' : ''}${budgetVarPct.toFixed(1)}% vs budget` : 'Budget = 0',
+            favorable: budgetVariance >= 0
+          });
+        }
+        if (cashCol && cashTotal !== null) {
+          kpis.push({
+            id: 'cash_total',
+            label: `Total ${cashCol}`,
+            value: FormatUtil.formatCompact(cashTotal, AppState.schema.monetary.includes(cashCol)),
+            fullValue: FormatUtil.formatCurrency(cashTotal),
+            formula: `SUM(${cashCol})`,
+            sourceCols: [cashCol],
+            deltaPct: null,
+            deltaLabel: 'Cash & liquidity position',
+            favorable: cashTotal >= 0
+          });
+        }
+        if (primaryMetricCol && avgTxn !== null) {
+          kpis.push({
+            id: 'avg_record',
+            label: `Avg ${primaryMetricCol} / Row`,
+            value: FormatUtil.formatCompact(avgTxn, AppState.schema.monetary.includes(primaryMetricCol)),
+            fullValue: FormatUtil.formatCurrency(avgTxn),
+            formula: `SUM(${primaryMetricCol}) / COUNT(rows)`,
+            sourceCols: [primaryMetricCol],
+            deltaPct: null,
+            deltaLabel: `${rows.length.toLocaleString()} records in scope`,
+            favorable: null
+          });
+        }
+
+        // Dimension breakdown for primary metric
+        const primaryDim = AppState.schema.dimensions[0] || AppState.schema.categorical[0] || null;
+        const dimBreakdown = this.aggregateByDimension(rows, primaryDim, primaryMetricCol, expCol);
+
+        // Insights
+        const insights = this.generateInsights(rows, {
+          primaryMetricCol, primaryTotal, totalRev, totalExp, netProfit, marginPct,
+          budgetVariance, budgetVarPct, momGrowthPct, primaryDim, dimBreakdown, timeSeries
+        });
+
+        return {
+          kpis,
+          primaryMetricCol,
+          secondaryMetricCol: expCol || numCols[1] || primaryMetricCol,
+          revCol,
+          expCol,
+          budCol,
+          primaryDim,
+          secondaryDim: AppState.schema.dimensions[1] || AppState.schema.categorical[1] || primaryDim,
+          dimBreakdown,
+          timeSeries,
+          insights,
+          recordCount: rows.length
+        };
+      },
+
+      aggregateByDimension(rows, dimCol, metricCol, secondaryCol = null) {
+        if (!dimCol || !metricCol) return [];
+        const map = new Map();
+        let grandTotal = 0;
+
+        for (const r of rows) {
+          const key = String(r[dimCol] ?? 'Unspecified');
+          const val = typeof r[metricCol] === 'number' && Number.isFinite(r[metricCol]) ? r[metricCol] : 0;
+          const secVal = secondaryCol && typeof r[secondaryCol] === 'number' && Number.isFinite(r[secondaryCol]) ? r[secondaryCol] : 0;
+          grandTotal += Math.abs(val);
+          if (!map.has(key)) {
+            map.set(key, { name: key, value: 0, secondary: 0, count: 0 });
+          }
+          const item = map.get(key);
+          item.value += val;
+          item.secondary += secVal;
+          item.count += 1;
+        }
+
+        const list = Array.from(map.values()).sort((a, b) => b.value - a.value);
+        let cumShare = 0;
+        return list.map(item => {
+          const sharePct = grandTotal > 0 ? (Math.abs(item.value) / grandTotal) * 100 : 0;
+          cumShare += sharePct;
+          return { ...item, sharePct, cumSharePct: Math.min(100, cumShare) };
+        });
+      },
+
+      generateInsights(rows, ctx) {
+        const list = [];
+        let rank = 1;
+
+        if (ctx.primaryMetricCol && ctx.primaryTotal !== null) {
+          list.push({
+            rank: rank++,
+            accent: 'pos-accent',
+            observation: `Aggregated ${ctx.primaryMetricCol} totals ${FormatUtil.formatCurrency(ctx.primaryTotal)} across ${rows.length.toLocaleString()} filtered records.`,
+            metric: `${ctx.primaryMetricCol}: ${FormatUtil.formatCompact(ctx.primaryTotal, true)}`,
+            comparison: ctx.momGrowthPct !== null ? `Latest period change: ${ctx.momGrowthPct >= 0 ? '+' : ''}${ctx.momGrowthPct.toFixed(1)}% MoM` : 'Filtered scope total',
+            significance: 'Establishes baseline scale for performance tracking and resource allocation.',
+            action: 'Review top-contributing segments and verify any period anomalies in Drill-Through.'
+          });
+        }
+
+        if (ctx.primaryDim && ctx.dimBreakdown.length > 0) {
+          const top = ctx.dimBreakdown[0];
+          const top3Share = ctx.dimBreakdown.slice(0, 3).reduce((acc, x) => acc + x.sharePct, 0);
+          list.push({
+            rank: rank++,
+            accent: top3Share > 75 ? 'neutral-accent' : 'pos-accent',
+            observation: `Leading ${ctx.primaryDim} is "${top.name}" with ${FormatUtil.formatCurrency(top.value)} (${top.sharePct.toFixed(1)}% share).`,
+            metric: `Top 3 ${ctx.primaryDim} share: ${top3Share.toFixed(1)}%`,
+            comparison: ctx.dimBreakdown.length > 1 ? `vs. next highest "${ctx.dimBreakdown[1].name}" (${FormatUtil.formatCurrency(ctx.dimBreakdown[1].value)})` : 'Single category',
+            significance: top3Share > 75 ? 'High concentration increases exposure to top-segment volatility.' : 'Balanced multi-segment contribution across active scope.',
+            action: `Drill through "${top.name}" to inspect underlying transactions and variance drivers.`
+          });
+        }
+
+        if (ctx.netProfit !== null && ctx.marginPct !== null) {
+          list.push({
+            rank: rank++,
+            accent: ctx.netProfit >= 0 ? 'pos-accent' : 'neutral-accent',
+            observation: `Computed net position is ${FormatUtil.formatCurrency(ctx.netProfit)} with a weighted margin of ${ctx.marginPct.toFixed(1)}%.`,
+            metric: `Net Position: ${FormatUtil.formatCompact(ctx.netProfit, true)} (${ctx.marginPct.toFixed(1)}%)`,
+            comparison: ctx.totalRev !== null && ctx.totalExp !== null ? `Inflow ${FormatUtil.formatCompact(ctx.totalRev, true)} vs Outflow ${FormatUtil.formatCompact(ctx.totalExp, true)}` : 'Direct profit field',
+            significance: 'Weighted margin reflects true aggregate profitability rather than unweighted averages.',
+            action: 'Compare cost ratios across categories on Page 3 to identify margin expansion levers.'
+          });
+        }
+
+        if (ctx.budgetVariance !== null && ctx.budgetVarPct !== null) {
+          list.push({
+            rank: rank++,
+            accent: ctx.budgetVariance >= 0 ? 'pos-accent' : 'neutral-accent',
+            observation: `Actual-to-budget variance stands at ${FormatUtil.formatCurrency(ctx.budgetVariance)} (${ctx.budgetVarPct >= 0 ? '+' : ''}${ctx.budgetVarPct.toFixed(1)}%).`,
+            metric: `Variance: ${FormatUtil.formatCompact(ctx.budgetVariance, true)}`,
+            comparison: `Actual vs Budget baseline in current filter context`,
+            significance: 'Variance direction must be interpreted alongside whether the measure is revenue/inflow or cost/expense.',
+            action: 'Inspect variance distribution on Page 4 before adjusting quarterly forecasts.'
+          });
+        }
+
+        return list.slice(0, 4);
+      }
+    };
+
+    /**
+     * GLOBAL FILTERING & CROSS-FILTERING ENGINE
+     */
+    const FilterEngine = {
+      buildGlobalSlicers() {
+        const container = document.getElementById('dynamicSlicersContainer');
+        const dims = [...new Set([...AppState.schema.dimensions, ...AppState.schema.categorical])].slice(0, 6);
+        const dates = AppState.schema.date.slice(0, 2);
+
+        let html = '';
+
+        for (const col of dates) {
+          const vals = AppState.analyticalRows.map(r => r[col]).filter(Boolean).sort();
+          const minD = vals[0] || '';
+          const maxD = vals[vals.length - 1] || '';
+          const cur = AppState.filters.globalDateRanges[col] || { start: '', end: '' };
+          html += `
+            <div class="filter-group">
+              <div class="filter-group-label">
+                <span>${FormatUtil.escapeHTML(col)} (Date Range)</span>
+                <button class="mini-btn" onclick="FilterEngine.clearDateFilter('${FormatUtil.escapeHTML(col)}')">Clear</button>
+              </div>
+              <div class="date-range-row">
+                <input type="date" class="filter-input" value="${cur.start}" min="${minD}" max="${maxD}"
+                  onchange="FilterEngine.setDateRange('${FormatUtil.escapeHTML(col)}', 'start', this.value)" />
+                <input type="date" class="filter-input" value="${cur.end}" min="${minD}" max="${maxD}"
+                  onchange="FilterEngine.setDateRange('${FormatUtil.escapeHTML(col)}', 'end', this.value)" />
+              </div>
+            </div>
+          `;
+        }
+
+        for (const col of dims) {
+          const uniqueVals = [...new Set(AppState.analyticalRows.map(r => String(r[col] ?? 'Unspecified')))].sort();
+          const selected = new Set(AppState.filters.globalCategorical[col] || []);
+          const safeId = `slicer_${col.replace(/[^a-zA-Z0-9_]/g, '_')}`;
+          html += `
+            <div class="filter-group">
+              <div class="filter-group-label">
+                <span>${FormatUtil.escapeHTML(col)}</span>
+                <button class="mini-btn" onclick="FilterEngine.clearCategoricalFilter('${FormatUtil.escapeHTML(col)}')">Clear</button>
+              </div>
+              <input type="text" class="filter-search" placeholder="Search ${FormatUtil.escapeHTML(col)}..."
+                oninput="FilterEngine.filterOptionList('${safeId}', this.value)" />
+              <div class="filter-options-list" id="${safeId}">
+                ${uniqueVals.slice(0, 80).map(v => `
+                  <label class="filter-option-item" data-val="${FormatUtil.escapeHTML(v.toLowerCase())}">
+                    <input type="checkbox" ${selected.has(v) ? 'checked' : ''}
+                      onchange="FilterEngine.toggleCategoricalValue('${FormatUtil.escapeHTML(col)}', '${FormatUtil.escapeHTML(v)}', this.checked)" />
+                    <span>${FormatUtil.escapeHTML(v)}</span>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        if (!html) {
+          html = '<div style="font-size:12px; color:var(--text-muted);">No categorical or date dimensions detected for slicers.</div>';
+        }
+        container.innerHTML = html;
+        this.updateFilterBadges();
+      },
+
+      filterOptionList(listId, query) {
+        const q = (query || '').toLowerCase().trim();
+        const list = document.getElementById(listId);
+        if (!list) return;
+        list.querySelectorAll('.filter-option-item').forEach(item => {
+          const val = item.getAttribute('data-val') || '';
+          item.style.display = (!q || val.includes(q)) ? 'flex' : 'none';
+        });
+      },
+
+      toggleCategoricalValue(col, val, checked) {
+        const arr = new Set(AppState.filters.globalCategorical[col] || []);
+        if (checked) arr.add(val);
+        else arr.delete(val);
+        if (arr.size === 0) delete AppState.filters.globalCategorical[col];
+        else AppState.filters.globalCategorical[col] = Array.from(arr);
+        this.applyFiltersAndRender();
+      },
+
+      clearCategoricalFilter(col) {
+        delete AppState.filters.globalCategorical[col];
+        this.buildGlobalSlicers();
+        this.applyFiltersAndRender();
+      },
+
+      setDateRange(col, bound, val) {
+        const cur = AppState.filters.globalDateRanges[col] || { start: '', end: '' };
+        cur[bound] = val;
+        if (!cur.start && !cur.end) delete AppState.filters.globalDateRanges[col];
+        else AppState.filters.globalDateRanges[col] = cur;
+        this.applyFiltersAndRender();
+      },
+
+      clearDateFilter(col) {
+        delete AppState.filters.globalDateRanges[col];
+        this.buildGlobalSlicers();
+        this.applyFiltersAndRender();
+      },
+
+      resetAllFilters() {
+        AppState.filters = { globalCategorical: {}, globalDateRanges: {}, pageFilters: {}, visualFilters: {} };
+        AppState.crossFilter = null;
+        this.buildGlobalSlicers();
+        this.applyFiltersAndRender();
+        FormatUtil.showToast('All filters and cross-selections reset.', 'info');
+      },
+
+      getActiveFilterSummaryList() {
+        const list = [];
+        for (const [col, vals] of Object.entries(AppState.filters.globalCategorical)) {
+          if (vals && vals.length) list.push({ type: 'cat', col, label: `${col}: ${vals.join(', ')}` });
+        }
+        for (const [col, rng] of Object.entries(AppState.filters.globalDateRanges)) {
+          if (rng?.start || rng?.end) list.push({ type: 'date', col, label: `${col}: ${rng.start || 'Start'} → ${rng.end || 'End'}` });
+        }
+        const pf = AppState.filters.pageFilters[AppState.activePage] || {};
+        for (const [col, vals] of Object.entries(pf)) {
+          if (vals && vals.length) list.push({ type: 'page', col, label: `Page ${AppState.activePage} ${col}: ${vals.join(', ')}` });
+        }
+        if (AppState.crossFilter) {
+          list.push({ type: 'cross', col: AppState.crossFilter.field, label: `Selected ${AppState.crossFilter.field}: ${AppState.crossFilter.value}` });
+        }
+        return list;
+      },
+
+      updateFilterBadges() {
+        const items = this.getActiveFilterSummaryList();
+        const badge = document.getElementById('activeFilterCountBadge');
+        if (badge) badge.textContent = String(items.length);
+
+        const summaryEl = document.getElementById('filterActiveSummary');
+        if (summaryEl) {
+          summaryEl.textContent = items.length === 0
+            ? 'No active filters applied.'
+            : `${items.length} active filter(s) across report pages.`;
+        }
+
+        const chipsEl = document.getElementById('activeContextChips');
+        if (chipsEl) {
+          const datasetChip = `<span class="meta-chip"><i data-lucide="database" size="12"></i> ${FormatUtil.escapeHTML(AppState.fileMeta.name || 'Dataset')}</span>`;
+          const filterChips = items.map(it =>
+            `<span class="meta-chip active-filter">${FormatUtil.escapeHTML(it.label)}</span>`
+          ).join('');
+          chipsEl.innerHTML = datasetChip + filterChips;
+          if (window.lucide) lucide.createIcons();
+        }
+
+        const crossBanner = document.getElementById('crossFilterBanner');
+        const crossText = document.getElementById('crossFilterText');
+        if (crossBanner && crossText) {
+          if (AppState.crossFilter) {
+            crossBanner.style.display = 'flex';
+            crossText.innerHTML = `<strong>Cross-Filter Active:</strong> ${FormatUtil.escapeHTML(AppState.crossFilter.field)} = <strong>${FormatUtil.escapeHTML(AppState.crossFilter.value)}</strong>`;
+          } else {
+            crossBanner.style.display = 'none';
+          }
+        }
+      },
+
+      getFilteredRows(includeCrossFilter = true) {
+        let rows = AppState.analyticalRows;
+
+        for (const [col, vals] of Object.entries(AppState.filters.globalCategorical)) {
+          if (vals && vals.length > 0) {
+            const set = new Set(vals);
+            rows = rows.filter(r => set.has(String(r[col] ?? 'Unspecified')));
+          }
+        }
+
+        for (const [col, rng] of Object.entries(AppState.filters.globalDateRanges)) {
+          if (rng?.start) rows = rows.filter(r => r[col] && r[col] >= rng.start);
+          if (rng?.end) rows = rows.filter(r => r[col] && r[col] <= rng.end);
+        }
+
+        const pf = AppState.filters.pageFilters[AppState.activePage] || {};
+        for (const [col, vals] of Object.entries(pf)) {
+          if (vals && vals.length > 0) {
+            const set = new Set(vals);
+            rows = rows.filter(r => set.has(String(r[col] ?? 'Unspecified')));
+          }
+        }
+
+        if (includeCrossFilter && AppState.crossFilter) {
+          const { field, value } = AppState.crossFilter;
+          rows = rows.filter(r => String(r[field] ?? 'Unspecified') === String(value));
+        }
+
+        return rows;
+      },
+
+      applyFiltersAndRender() {
+        this.updateFilterBadges();
+        if (AppState.hasDataset) {
+          RenderEngine.renderCurrentPage();
+        }
+      }
+    };
+
+    /**
+     * INTERACTION ENGINE (CROSS-FILTERING, TOOLTIPS, BOOKMARKS, DRILL-THROUGH)
+     */
+    const InteractionEngine = {
+      setCrossFilter(sourceVisualId, field, value) {
+        if (!field || value === undefined || value === null || value === '') return;
+        // Prevent circular toggle loops: clicking same selection clears it
+        if (AppState.crossFilter && AppState.crossFilter.field === field && String(AppState.crossFilter.value) === String(value)) {
+          this.clearCrossFilter();
+          return;
+        }
+        AppState.crossFilter = { sourceVisualId, field, value: String(value) };
+        FilterEngine.applyFiltersAndRender();
+      },
+
+      clearCrossFilter() {
+        AppState.crossFilter = null;
+        FilterEngine.applyFiltersAndRender();
+      },
+
+      showCustomTooltip(event, payload) {
+        const panel = document.getElementById('customTooltipPanel');
+        if (!panel || !payload) return;
+        panel.innerHTML = `
+          <div style="font-weight:700; color:var(--brand-primary); margin-bottom:4px;">${FormatUtil.escapeHTML(payload.title || 'Selection')}</div>
+          ${payload.field ? `<div><strong>Dimension/Field:</strong> ${FormatUtil.escapeHTML(payload.field)}</div>` : ''}
+          ${payload.valueText ? `<div><strong>Metric Value:</strong> ${FormatUtil.escapeHTML(payload.valueText)}</div>` : ''}
+          ${payload.shareText ? `<div><strong>Contribution:</strong> ${FormatUtil.escapeHTML(payload.shareText)}</div>` : ''}
+          ${payload.extra ? `<div style="color:var(--text-muted); margin-top:3px;">${FormatUtil.escapeHTML(payload.extra)}</div>` : ''}
+        `;
+        const x = Math.min(window.innerWidth - 355, (event?.clientX || 120) + 14);
+        const y = Math.min(window.innerHeight - 160, (event?.clientY || 120) + 14);
+        panel.style.left = `${Math.max(8, x)}px`;
+        panel.style.top = `${Math.max(8, y)}px`;
+        panel.classList.add('visible');
+      },
+
+      hideCustomTooltip() {
+        const panel = document.getElementById('customTooltipPanel');
+        if (panel) panel.classList.remove('visible');
+      },
+
+      saveBookmark(name) {
+        const cleanName = (name || '').trim() || `View ${AppState.bookmarks.length + 1} (Page ${AppState.activePage})`;
+        const bm = {
+          id: `bm_${Date.now()}`,
+          name: cleanName,
+          page: AppState.activePage,
+          filters: JSON.parse(JSON.stringify({
+            globalCategorical: AppState.filters.globalCategorical,
+            globalDateRanges: AppState.filters.globalDateRanges,
+            pageFilters: AppState.filters.pageFilters
+          })),
+          crossFilter: AppState.crossFilter ? { ...AppState.crossFilter } : null,
+          createdAt: new Date().toLocaleTimeString()
+        };
+        AppState.bookmarks.push(bm);
+        this.updateBookmarkBadge();
+        FormatUtil.showToast(`Bookmark "${cleanName}" saved.`, 'success');
+      },
+
+      restoreBookmark(id) {
+        const bm = AppState.bookmarks.find(b => b.id === id);
+        if (!bm) return;
+        AppState.filters.globalCategorical = JSON.parse(JSON.stringify(bm.filters.globalCategorical || {}));
+        AppState.filters.globalDateRanges = JSON.parse(JSON.stringify(bm.filters.globalDateRanges || {}));
+        AppState.filters.pageFilters = JSON.parse(JSON.stringify(bm.filters.pageFilters || {}));
+        AppState.crossFilter = bm.crossFilter ? { ...bm.crossFilter } : null;
+        FilterEngine.buildGlobalSlicers();
+        AppController.navigatePage(bm.page);
+        OverlayManager.close();
+        FormatUtil.showToast(`Restored bookmark "${bm.name}".`, 'info');
+      },
+
+      renameBookmark(id, newName) {
+        const bm = AppState.bookmarks.find(b => b.id === id);
+        if (bm && newName && newName.trim()) {
+          bm.name = newName.trim();
+          OverlayManager.openBookmarks();
+        }
+      },
+
+      deleteBookmark(id) {
+        AppState.bookmarks = AppState.bookmarks.filter(b => b.id !== id);
+        this.updateBookmarkBadge();
+        OverlayManager.openBookmarks();
+      },
+
+      updateBookmarkBadge() {
+        const el = document.getElementById('sidebarBookmarkCount');
+        if (el) el.textContent = String(AppState.bookmarks.length);
+      },
+
+      openDrillThroughFor(dimCol, val) {
+        const rows = FilterEngine.getFilteredRows(true);
+        const matching = dimCol && val !== undefined
+          ? rows.filter(r => String(r[dimCol] ?? 'Unspecified') === String(val))
+          : rows;
+        AppState.drillThrough = { dimension: dimCol, value: val, records: matching };
+        OverlayManager.openDrillThrough();
+      }
+    };
+
+    /**
+     * CHART CONFIGURATION & FOUR-PAGE RENDER ENGINE (CHART.JS + PLOTLY.JS)
+     */
+    const RenderEngine = {
+      destroyCharts() {
+        Object.values(AppState.chartInstances).forEach(inst => {
+          if (inst && typeof inst.destroy === 'function') inst.destroy();
+          else if (inst && inst.el && window.Plotly) {
+            try { Plotly.purge(inst.el); } catch (_) {}
+          }
+        });
+        AppState.chartInstances = {};
+      },
+
+      renderCurrentPage() {
+        if (!AppState.hasDataset) return;
+        this.destroyCharts();
+        InteractionEngine.hideCustomTooltip();
+
+        const page = AppState.activePage;
+        const rows = FilterEngine.getFilteredRows(true);
+        const metrics = FinancialEngine.computeFilteredMetrics(rows);
+
+        this.renderBanner(page, metrics);
+        this.renderKPIs(metrics);
+        this.renderPageCharts(page, rows, metrics);
+        this.renderExecutiveSummary(page, metrics);
+        this.renderSummaryTable(rows, metrics);
+        FilterEngine.updateFilterBadges();
+
+        if (window.lucide) lucide.createIcons();
+      },
+
+      renderBanner(page, metrics) {
+        const titleEl = document.getElementById('reportPageTitle');
+        const objEl = document.getElementById('reportPageObjective');
+        const t2 = AppState.selectedPageThemes[2]?.name || 'Primary Analysis';
+        const t3 = AppState.selectedPageThemes[3]?.name || 'Secondary Analysis';
+        const t4 = AppState.selectedPageThemes[4]?.name || 'Advanced Analysis';
+
+        const pageMeta = {
+          1: {
+            title: 'Executive Overview & Summary',
+            obj: `Rapid executive snapshot across ${metrics.recordCount.toLocaleString()} records in scope; highlights primary KPIs, trends, concentration, and ranked findings.`
+          },
+          2: {
+            title: `${t2} (Primary Analysis)`,
+            obj: `Deep-dive into ${t2.toLowerCase()} trends, dimension drivers, and period performance using ${metrics.primaryMetricCol || 'available measures'}.`
+          },
+          3: {
+            title: `${t3} (Secondary Analysis)`,
+            obj: `Comparative rankings, cost/category structure, and distribution analysis for ${t3.toLowerCase()}.`
+          },
+          4: {
+            title: `${t4} (Advanced Analysis)`,
+            obj: `Pareto concentration, multi-dimensional relationships, and variance/anomaly investigation for ${t4.toLowerCase()}.`
+          }
+        }[page];
+
+        if (titleEl) titleEl.innerHTML = `<span>${FormatUtil.escapeHTML(pageMeta.title)}</span>`;
+        if (objEl) objEl.textContent = pageMeta.obj;
+      },
+
+      renderKPIs(metrics) {
+        const grid = document.getElementById('kpiGrid');
+        if (!metrics.kpis.length) {
+          grid.innerHTML = '<div class="kpi-card"><div class="kpi-label">No Numeric KPIs Detected</div><div style="font-size:12px; color:var(--text-muted);">Check Schema &amp; Field Map to mark numeric/monetary columns.</div></div>';
+          return;
+        }
+
+        grid.innerHTML = metrics.kpis.map(k => {
+          const deltaClass = k.favorable === true ? 'delta-pos' : (k.favorable === false ? 'delta-neg' : 'delta-neu');
+          return `
+            <article class="kpi-card" title="Formula: ${FormatUtil.escapeHTML(k.formula)} | Source: ${FormatUtil.escapeHTML(k.sourceCols.join(', '))}">
+              <div class="kpi-top">
+                <span class="kpi-label">${FormatUtil.escapeHTML(k.label)}</span>
+                <button class="mini-btn" onclick="InteractionEngine.openDrillThroughFor(null, null)" title="Inspect Records">Records</button>
+              </div>
+              <div class="kpi-value" title="${FormatUtil.escapeHTML(k.fullValue)}">${FormatUtil.escapeHTML(k.value)}</div>
+              <div class="kpi-footer">
+                <span class="delta-pill ${deltaClass}">${FormatUtil.escapeHTML(k.deltaLabel)}</span>
+                <span>${FormatUtil.escapeHTML(k.formula)}</span>
+              </div>
+            </article>
+          `;
+        }).join('');
+      },
+
+      buildChartCardHTML(id, title, fieldsText, captionText, allowDrill = true) {
+        return `
+          <div class="chart-card" id="card_${id}">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-title">${FormatUtil.escapeHTML(title)}</h3>
+                <div class="chart-fields">Fields: ${FormatUtil.escapeHTML(fieldsText)}</div>
+              </div>
+              <div class="chart-actions">
+                ${allowDrill ? `<button class="mini-btn" onclick="InteractionEngine.openDrillThroughFor(AppState.schema.dimensions[0] || AppState.schema.categorical[0], null)">Drill</button>` : ''}
+                <button class="mini-btn" onclick="OverlayManager.expandChart('${id}', '${FormatUtil.escapeHTML(title)}')">Expand</button>
+              </div>
+            </div>
+            <div class="chart-container" id="box_${id}"></div>
+            <div class="chart-caption">
+              <span>${FormatUtil.escapeHTML(captionText)}</span>
+              <span>Click segment to cross-filter</span>
+            </div>
+          </div>
+        `;
+      },
+
+      renderPageCharts(page, rows, metrics) {
+        const area = document.getElementById('pageChartsArea');
+        const palette = ThemeManager.getChartPalette();
+        const metricCol = metrics.primaryMetricCol;
+        const dimCol = metrics.primaryDim;
+        const secCol = metrics.secondaryMetricCol;
+        const ts = metrics.timeSeries;
+        const breakdown = metrics.dimBreakdown;
+
+        if (!metricCol) {
+          area.innerHTML = '<div class="section-card"><p class="page-subtitle">No numeric columns detected in the dataset to plot charts.</p></div>';
+          return;
+        }
+
+        if (page === 1) {
+          area.innerHTML = `
+            <div class="visual-grid-2">
+              ${this.buildChartCardHTML('c1_trend', `${metricCol} Over Time`, `${metricCol}, ${AppState.schema.date[0] || 'Period'}`, 'Time-series aggregation across active filters')}
+              ${this.buildChartCardHTML('c1_contrib', `${metricCol} by ${dimCol || 'Record'}`, `${metricCol}, ${dimCol || 'Index'}`, 'Contribution share by top segments')}
+            </div>
+            <div class="visual-grid-2">
+              ${this.buildChartCardHTML('c1_comp', `${metricCol} vs. ${secCol}`, `${metricCol}, ${secCol}`, 'Comparative breakdown across top categories')}
+              ${this.buildChartCardHTML('c1_pareto', `Concentration & Cumulative Share (${dimCol || 'Segment'})`, `${dimCol || 'Segment'}, ${metricCol}`, 'Pareto cumulative contribution curve')}
+            </div>
+          `;
+          this.drawTimeSeriesChart('c1_trend', ts, metricCol, palette);
+          this.drawBarChart('c1_contrib', breakdown.slice(0, 8), metricCol, dimCol, palette, 'bar');
+          this.drawComparisonChart('c1_comp', breakdown.slice(0, 7), metricCol, secCol, dimCol, palette);
+          this.drawParetoPlotly('c1_pareto', breakdown.slice(0, 10), metricCol, dimCol, palette);
+        } else if (page === 2) {
+          area.innerHTML = `
+            <div class="visual-grid-1">
+              ${this.buildChartCardHTML('c2_detail_trend', `Detailed ${metricCol} Trajectory & Moving Context`, `${metricCol}, ${AppState.schema.date[0] || 'Period'}`, 'Period-by-period trend in active scope')}
+            </div>
+            <div class="visual-grid-2">
+              ${this.buildChartCardHTML('c2_drivers', `Top Drivers by ${dimCol || 'Category'}`, `${dimCol || 'Category'}, ${metricCol}`, 'Ranked performance contributors')}
+              ${this.buildChartCardHTML('c2_donut', `Share Distribution (${dimCol || 'Category'})`, `${dimCol || 'Category'}, ${metricCol}`, 'Proportional share of active total')}
+            </div>
+          `;
+          this.drawTimeSeriesChart('c2_detail_trend', ts, metricCol, palette);
+          this.drawBarChart('c2_drivers', breakdown.slice(0, 10), metricCol, dimCol, palette, 'bar');
+          this.drawDonutChart('c2_donut', breakdown.slice(0, 6), metricCol, dimCol, palette);
+        } else if (page === 3) {
+          const expMetric = metrics.expCol || secCol;
+          area.innerHTML = `
+            <div class="visual-grid-2">
+              ${this.buildChartCardHTML('c3_rank', `Horizontal Ranking of ${expMetric} by ${dimCol || 'Segment'}`, `${dimCol || 'Segment'}, ${expMetric}`, 'Ordered from highest to lowest value')}
+              ${this.buildChartCardHTML('c3_dist', `Distribution of ${expMetric}`, `${expMetric}`, 'Frequency histogram across records')}
+            </div>
+          `;
+          this.drawBarChart('c3_rank', breakdown.slice(0, 10), expMetric, dimCol, palette, 'bar', true);
+          this.drawHistogramPlotly('c3_dist', rows, expMetric, palette);
+        } else if (page === 4) {
+          area.innerHTML = `
+            <div class="visual-grid-2">
+              ${this.buildChartCardHTML('c4_scatter', `Relationship: ${metricCol} vs. ${secCol}`, `${metricCol}, ${secCol}, ${dimCol || 'Record'}`, 'Scatter analysis of paired numeric measures')}
+              ${this.buildChartCardHTML('c4_waterfall', `Cumulative Bridge by ${dimCol || 'Segment'}`, `${dimCol || 'Segment'}, ${metricCol}`, 'Stepwise contribution bridge across top segments')}
+            </div>
+          `;
+          this.drawScatterPlotly('c4_scatter', rows, metricCol, secCol, dimCol, palette);
+          this.drawWaterfallPlotly('c4_waterfall', breakdown.slice(0, 8), metricCol, dimCol, palette);
+        }
+      },
+
+      drawTimeSeriesChart(id, ts, metricCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box) return;
+        if (!ts || ts.length === 0) {
+          box.innerHTML = '<div style="padding:40px 16px; text-align:center; color:var(--text-muted); font-size:12.5px;">No date field detected to build a time-series trend.</div>';
+          return;
+        }
+        box.innerHTML = `<canvas id="canvas_${id}"></canvas>`;
+        const ctx = document.getElementById(`canvas_${id}`).getContext('2d');
+
+        const chart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: ts.map(d => d.period),
+            datasets: [{
+              label: metricCol,
+              data: ts.map(d => d.primary),
+              borderColor: palette.primary,
+              backgroundColor: palette.primary + '22',
+              fill: true,
+              tension: 0.25,
+              pointRadius: 3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { labels: { color: palette.text, font: { size: 11 } } },
+              tooltip: {
+                enabled: false,
+                external: (context) => {
+                  const { chart: c, tooltip } = context;
+                  if (tooltip.opacity === 0) { InteractionEngine.hideCustomTooltip(); return; }
+                  const idx = tooltip.dataPoints?.[0]?.dataIndex;
+                  if (idx === undefined || !ts[idx]) return;
+                  const pt = ts[idx];
+                  const rect = c.canvas.getBoundingClientRect();
+                  InteractionEngine.showCustomTooltip(
+                    { clientX: rect.left + tooltip.caretX, clientY: rect.top + tooltip.caretY },
+                    {
+                      title: `Period: ${pt.period}`,
+                      field: metricCol,
+                      valueText: FormatUtil.formatCurrency(pt.primary),
+                      extra: `${pt.count} record(s) in period`
+                    }
+                  );
+                }
+              }
+            },
+            scales: {
+              x: { ticks: { color: palette.muted, font: { size: 11 } }, grid: { color: palette.grid } },
+              y: { ticks: { color: palette.muted, font: { size: 11 }, callback: v => FormatUtil.formatCompact(v, true) }, grid: { color: palette.grid } }
+            }
+          }
+        });
+        AppState.chartInstances[id] = chart;
+      },
+
+      drawBarChart(id, items, metricCol, dimCol, palette, type = 'bar', horizontal = false) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box) return;
+        if (!items || items.length === 0) {
+          box.innerHTML = '<div style="padding:40px 16px; text-align:center; color:var(--text-muted); font-size:12.5px;">No categorical dimension available for breakdown.</div>';
+          return;
+        }
+        box.innerHTML = `<canvas id="canvas_${id}"></canvas>`;
+        const ctx = document.getElementById(`canvas_${id}`).getContext('2d');
+
+        const chart = new Chart(ctx, {
+          type,
+          data: {
+            labels: items.map(d => d.name),
+            datasets: [{
+              label: metricCol,
+              data: items.map(d => d.value),
+              backgroundColor: items.map((d, i) =>
+                AppState.crossFilter && AppState.crossFilter.field === dimCol && String(AppState.crossFilter.value) === d.name
+                  ? palette.primary
+                  : palette.series[i % palette.series.length]
+              ),
+              borderRadius: 4
+            }]
+          },
+          options: {
+            indexAxis: horizontal ? 'y' : 'x',
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (_, elements) => {
+              if (elements && elements.length > 0 && dimCol) {
+                const idx = elements[0].index;
+                InteractionEngine.setCrossFilter(id, dimCol, items[idx].name);
+              }
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                enabled: false,
+                external: (context) => {
+                  const { chart: c, tooltip } = context;
+                  if (tooltip.opacity === 0) { InteractionEngine.hideCustomTooltip(); return; }
+                  const idx = tooltip.dataPoints?.[0]?.dataIndex;
+                  if (idx === undefined || !items[idx]) return;
+                  const it = items[idx];
+                  const rect = c.canvas.getBoundingClientRect();
+                  InteractionEngine.showCustomTooltip(
+                    { clientX: rect.left + tooltip.caretX, clientY: rect.top + tooltip.caretY },
+                    {
+                      title: it.name,
+                      field: dimCol || 'Segment',
+                      valueText: FormatUtil.formatCurrency(it.value),
+                      shareText: `${it.sharePct.toFixed(1)}% of visible total`,
+                      extra: `${it.count} record(s) — click to cross-filter`
+                    }
+                  );
+                }
+              }
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: palette.muted,
+                  font: { size: 11 },
+                  callback: horizontal ? (v => FormatUtil.formatCompact(v, true)) : undefined
+                },
+                grid: { color: palette.grid }
+              },
+              y: {
+                ticks: {
+                  color: palette.muted,
+                  font: { size: 11 },
+                  callback: !horizontal ? (v => FormatUtil.formatCompact(v, true)) : undefined
+                },
+                grid: { color: palette.grid }
+              }
+            }
+          }
+        });
+        AppState.chartInstances[id] = chart;
+      },
+
+      drawComparisonChart(id, items, colA, colB, dimCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box || !items.length) return;
+        box.innerHTML = `<canvas id="canvas_${id}"></canvas>`;
+        const ctx = document.getElementById(`canvas_${id}`).getContext('2d');
+
+        const chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: items.map(d => d.name),
+            datasets: [
+              { label: colA, data: items.map(d => d.value), backgroundColor: palette.primary, borderRadius: 3 },
+              { label: colB, data: items.map(d => d.secondary), backgroundColor: palette.secondary, borderRadius: 3 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (_, elements) => {
+              if (elements && elements.length > 0 && dimCol) {
+                const idx = elements[0].index;
+                InteractionEngine.setCrossFilter(id, dimCol, items[idx].name);
+              }
+            },
+            plugins: {
+              legend: { labels: { color: palette.text, font: { size: 11 } } }
+            },
+            scales: {
+              x: { ticks: { color: palette.muted, font: { size: 11 } }, grid: { color: palette.grid } },
+              y: { ticks: { color: palette.muted, font: { size: 11 }, callback: v => FormatUtil.formatCompact(v, true) }, grid: { color: palette.grid } }
+            }
+          }
+        });
+        AppState.chartInstances[id] = chart;
+      },
+
+      drawDonutChart(id, items, metricCol, dimCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box || !items.length) return;
+        box.innerHTML = `<canvas id="canvas_${id}"></canvas>`;
+        const ctx = document.getElementById(`canvas_${id}`).getContext('2d');
+
+        const chart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: items.map(d => d.name),
+            datasets: [{
+              data: items.map(d => Math.abs(d.value)),
+              backgroundColor: items.map((_, i) => palette.series[i % palette.series.length]),
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (_, elements) => {
+              if (elements && elements.length > 0 && dimCol) {
+                const idx = elements[0].index;
+                InteractionEngine.setCrossFilter(id, dimCol, items[idx].name);
+              }
+            },
+            plugins: {
+              legend: { position: 'right', labels: { color: palette.text, font: { size: 11 } } }
+            }
+          }
+        });
+        AppState.chartInstances[id] = chart;
+      },
+
+      drawParetoPlotly(id, items, metricCol, dimCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box) return;
+        if (!window.Plotly || !items.length) {
+          box.innerHTML = '<div style="padding:40px 16px; text-align:center; color:var(--text-muted); font-size:12.5px;">Plotly unavailable or no segments to display.</div>';
+          return;
+        }
+        const traces = [
+          {
+            x: items.map(d => d.name),
+            y: items.map(d => d.value),
+            name: metricCol,
+            type: 'bar',
+            marker: { color: palette.secondary }
+          },
+          {
+            x: items.map(d => d.name),
+            y: items.map(d => d.cumSharePct),
+            name: 'Cumulative %',
+            type: 'scatter',
+            mode: 'lines+markers',
+            yaxis: 'y2',
+            line: { color: palette.primary, width: 2.5 }
+          }
+        ];
+        const layout = {
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(0,0,0,0)',
+          margin: { t: 24, r: 44, b: 42, l: 52 },
+          font: { color: palette.text, size: 11 },
+          legend: { orientation: 'h', y: 1.15 },
+          xaxis: { tickfont: { color: palette.muted } },
+          yaxis: { title: metricCol, tickfont: { color: palette.muted }, gridcolor: palette.grid },
+          yaxis2: { title: 'Cum %', overlaying: 'y', side: 'right', range: [0, 105], tickfont: { color: palette.muted } }
+        };
+        Plotly.newPlot(box, traces, layout, { responsive: true, displayModeBar: false });
+        box.on('plotly_click', (ev) => {
+          const pt = ev.points?.[0];
+          if (pt && dimCol) InteractionEngine.setCrossFilter(id, dimCol, pt.x);
+        });
+        AppState.chartInstances[id] = { el: box };
+      },
+
+      drawHistogramPlotly(id, rows, col, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box || !window.Plotly || !col) return;
+        const vals = rows.map(r => r[col]).filter(v => typeof v === 'number' && Number.isFinite(v));
+        if (!vals.length) {
+          box.innerHTML = '<div style="padding:40px 16px; text-align:center; color:var(--text-muted); font-size:12.5px;">No numeric values available for distribution.</div>';
+          return;
+        }
+        const traces = [{ x: vals, type: 'histogram', marker: { color: palette.primary } }];
+        const layout = {
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(0,0,0,0)',
+          margin: { t: 20, r: 20, b: 40, l: 48 },
+          font: { color: palette.text, size: 11 },
+          xaxis: { title: col, gridcolor: palette.grid },
+          yaxis: { title: 'Count', gridcolor: palette.grid }
+        };
+        Plotly.newPlot(box, traces, layout, { responsive: true, displayModeBar: false });
+        AppState.chartInstances[id] = { el: box };
+      },
+
+      drawScatterPlotly(id, rows, colX, colY, dimCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box || !window.Plotly || !colX || !colY) return;
+        const pts = rows.filter(r => typeof r[colX] === 'number' && typeof r[colY] === 'number');
+        const traces = [{
+          x: pts.map(r => r[colX]),
+          y: pts.map(r => r[colY]),
+          text: pts.map(r => dimCol ? `${dimCol}: ${r[dimCol]}` : `Row ${r._rowIndex}`),
+          mode: 'markers',
+          type: 'scatter',
+          marker: { color: palette.primary, size: 7, opacity: 0.78 }
+        }];
+        const layout = {
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(0,0,0,0)',
+          margin: { t: 20, r: 20, b: 44, l: 54 },
+          font: { color: palette.text, size: 11 },
+          xaxis: { title: colX, gridcolor: palette.grid },
+          yaxis: { title: colY, gridcolor: palette.grid }
+        };
+        Plotly.newPlot(box, traces, layout, { responsive: true, displayModeBar: false });
+        AppState.chartInstances[id] = { el: box };
+      },
+
+      drawWaterfallPlotly(id, items, metricCol, dimCol, palette) {
+        const box = document.getElementById(`box_${id}`);
+        if (!box || !window.Plotly || !items.length) return;
+        const traces = [{
+          type: 'waterfall',
+          orientation: 'v',
+          x: items.map(d => d.name),
+          y: items.map(d => d.value),
+          connector: { line: { color: palette.muted } },
+          increasing: { marker: { color: palette.positive } },
+          decreasing: { marker: { color: palette.negative } },
+          totals: { marker: { color: palette.primary } }
+        }];
+        const layout = {
+          paper_bgcolor: 'rgba(0,0,0,0)',
+          plot_bgcolor: 'rgba(0,0,0,0)',
+          margin: { t: 20, r: 20, b: 44, l: 54 },
+          font: { color: palette.text, size: 11 },
+          xaxis: { tickfont: { color: palette.muted } },
+          yaxis: { title: metricCol, gridcolor: palette.grid }
+        };
+        Plotly.newPlot(box, traces, layout, { responsive: true, displayModeBar: false });
+        AppState.chartInstances[id] = { el: box };
+      },
+
+      renderExecutiveSummary(page, metrics) {
+        const narEl = document.getElementById('executiveSummaryNarrative');
+        const gridEl = document.getElementById('insightsGrid');
+        const activeFilters = FilterEngine.getActiveFilterSummaryList();
+        const filterNote = activeFilters.length
+          ? `Active filters: ${activeFilters.map(f => f.label).join(' | ')}.`
+          : 'No active filters (full cleaned dataset in scope).';
+
+        if (narEl) {
+          narEl.textContent =
+            `Executive Summary (Page ${page}): Evaluated ${metrics.recordCount.toLocaleString()} records from "${AppState.fileMeta.name}". ${filterNote} ` +
+            `Detected themes: ${AppState.supportedThemes.map(t => t.name).join(', ')}.`;
+        }
+
+        if (gridEl) {
+          gridEl.innerHTML = metrics.insights.map(ins => `
+            <div class="insight-card ${ins.accent || ''}">
+              <div class="insight-rank">Priority #${ins.rank} &bull; Factual Observation</div>
+              <div class="insight-row"><strong>Observation:</strong> ${FormatUtil.escapeHTML(ins.observation)}</div>
+              <div class="insight-row"><strong>Supporting Metric:</strong> ${FormatUtil.escapeHTML(ins.metric)} (${FormatUtil.escapeHTML(ins.comparison)})</div>
+              <div class="insight-row"><strong>Significance:</strong> ${FormatUtil.escapeHTML(ins.significance)}</div>
+              <div class="insight-row"><strong>Suggested Action:</strong> ${FormatUtil.escapeHTML(ins.action)}</div>
+            </div>
+          `).join('');
+        }
+      },
+
+      renderSummaryTable(rows, metrics) {
+        const wrap = document.getElementById('pageSummaryTableWrap');
+        if (!wrap) return;
+        const dimCol = metrics.primaryDim;
+        const metricCol = metrics.primaryMetricCol;
+
+        if (dimCol && metricCol && metrics.dimBreakdown.length > 0) {
+          const topRows = metrics.dimBreakdown.slice(0, 10);
+          wrap.innerHTML = `
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>${FormatUtil.escapeHTML(dimCol)}</th>
+                  <th>Records</th>
+                  <th>${FormatUtil.escapeHTML(metricCol)}</th>
+                  <th>Share %</th>
+                  <th>Cumulative %</th>
+                  <th>Drill-Through</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${topRows.map(r => `
+                  <tr>
+                    <td><strong>${FormatUtil.escapeHTML(r.name)}</strong></td>
+                    <td>${r.count.toLocaleString()}</td>
+                    <td>${FormatUtil.escapeHTML(FormatUtil.formatCurrency(r.value))}</td>
+                    <td>${FormatUtil.formatPercent(r.sharePct)}</td>
+                    <td>${FormatUtil.formatPercent(r.cumSharePct)}</td>
+                    <td><button class="mini-btn" onclick="InteractionEngine.openDrillThroughFor('${FormatUtil.escapeHTML(dimCol)}', '${FormatUtil.escapeHTML(r.name)}')">Inspect</button></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `;
+        } else {
+          const preview = rows.slice(0, 10);
+          const cols = AppState.columns.slice(0, 7);
+          wrap.innerHTML = `
+            <table class="data-table">
+              <thead><tr>${cols.map(c => `<th>${FormatUtil.escapeHTML(c)}</th>`).join('')}</tr></thead>
+              <tbody>
+                ${preview.map(r => `<tr>${cols.map(c => `<td>${FormatUtil.escapeHTML(r[c] ?? '')}</td>`).join('')}</tr>`).join('')}
+              </tbody>
+            </table>
+          `;
+        }
+      }
+    };
+
+    /**
+     * OVERLAYS, BOOKMARKS, DRILL-THROUGH & SCHEMA MAPPING
+     */
+    const OverlayManager = {
+      open(title, bodyHtml, footerHtml = null) {
+        document.getElementById('overlayTitle').textContent = title;
+        document.getElementById('overlayBody').innerHTML = bodyHtml;
+        if (footerHtml !== null) {
+          document.getElementById('overlayFooter').innerHTML = footerHtml;
+        } else {
+          document.getElementById('overlayFooter').innerHTML = `<button class="action-btn" onclick="OverlayManager.close()">Close</button>`;
+        }
+        document.getElementById('overlayBackdrop').classList.add('open');
+        if (window.lucide) lucide.createIcons();
+      },
+
+      close() {
+        document.getElementById('overlayBackdrop').classList.remove('open');
+      },
+
+      expandChart(chartId, title) {
+        const srcBox = document.getElementById(`box_${chartId}`);
+        if (!srcBox) return;
+        this.open(`Expanded View — ${title}`, `<div style="min-height:420px; width:100%;" id="expandedChartSlot">${srcBox.innerHTML}</div>`);
+        const slot = document.getElementById('expandedChartSlot');
+        const canvas = slot?.querySelector('canvas');
+        if (canvas && AppState.chartInstances[chartId]) {
+          const cfg = AppState.chartInstances[chartId].config;
+          if (cfg) new Chart(canvas.getContext('2d'), { type: cfg.type, data: cfg.data, options: { ...cfg.options, maintainAspectRatio: false } });
+        }
+        const plotlyDiv = slot?.querySelector('.js-plotly-plot');
+        if (plotlyDiv && window.Plotly) {
+          Plotly.Plots.resize(plotlyDiv);
+        }
+      },
+
+      openDatasetInfo() {
+        if (!AppState.hasDataset) {
+          this.open('Dataset & Quality Report', '<p>No dataset loaded yet.</p>');
+          return;
+        }
+        const qr = AppState.qualityReport;
+        const prof = AppState.profilingReport;
+        const html = `
+          <div class="kpi-grid">
+            <div class="kpi-card"><div class="kpi-label">Original Rows</div><div class="kpi-value">${qr.originalRows.toLocaleString()}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Cleaned Rows</div><div class="kpi-value">${qr.cleanedRows.toLocaleString()}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Duplicate Flags</div><div class="kpi-value">${qr.duplicateCount.toLocaleString()}</div></div>
+            <div class="kpi-card"><div class="kpi-label">Missing Cells</div><div class="kpi-value">${qr.missingCount.toLocaleString()}</div></div>
+          </div>
+          <div>
+            <h4 style="margin:0 0 6px;">Transformation Log</h4>
+            <ul style="margin:0; padding-left:18px; font-size:12.5px;">
+              ${qr.transformationLog.map(x => `<li>${FormatUtil.escapeHTML(x)}</li>`).join('')}
+            </ul>
+          </div>
+          <div>
+            <h4 style="margin:0 0 6px;">Column Profiling</h4>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Column</th><th>Type</th><th>Unique</th><th>Missing</th><th>Outliers</th><th>Min / Range</th><th>Max</th></tr></thead>
+                <tbody>
+                  ${prof.colProfiles.map(p => `
+                    <tr>
+                      <td><strong>${FormatUtil.escapeHTML(p.column)}</strong></td>
+                      <td>${FormatUtil.escapeHTML(p.inferredType)}</td>
+                      <td>${p.uniqueCount}</td>
+                      <td>${p.missingCount}</td>
+                      <td>${p.outliersCount}</td>
+                      <td>${FormatUtil.escapeHTML(p.dateRange || (p.minVal !== null ? FormatUtil.formatNumber(p.minVal) : '—'))}</td>
+                      <td>${p.maxVal !== null ? FormatUtil.formatNumber(p.maxVal) : '—'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+        this.open('Dataset Profiling & Data Quality Report', html);
+      },
+
+      openFieldMapping() {
+        if (!AppState.hasDataset) {
+          this.open('Schema & Field Mapping', '<p>Upload a dataset first to inspect or override column roles.</p>');
+          return;
+        }
+        const rowsHtml = AppState.columns.map(col => {
+          const curRole = AppState.schema.date.includes(col) ? 'date'
+            : AppState.schema.numeric.includes(col) ? 'numeric'
+            : AppState.schema.categorical.includes(col) ? 'categorical' : 'text';
+          const isMon = AppState.schema.monetary.includes(col);
+          const isPct = AppState.schema.percentage.includes(col);
+          return `
+            <tr>
+              <td><strong>${FormatUtil.escapeHTML(col)}</strong></td>
+              <td>
+                <select class="filter-select" id="role_${FormatUtil.escapeHTML(col)}">
+                  <option value="numeric" ${curRole === 'numeric' ? 'selected' : ''}>Numeric</option>
+                  <option value="date" ${curRole === 'date' ? 'selected' : ''}>Date</option>
+                  <option value="categorical" ${curRole === 'categorical' ? 'selected' : ''}>Categorical</option>
+                  <option value="text" ${curRole === 'text' ? 'selected' : ''}>Text / ID</option>
+                </select>
+              </td>
+              <td><input type="checkbox" id="mon_${FormatUtil.escapeHTML(col)}" ${isMon ? 'checked' : ''} /></td>
+              <td><input type="checkbox" id="pct_${FormatUtil.escapeHTML(col)}" ${isPct ? 'checked' : ''} /></td>
+            </tr>
+          `;
+        }).join('');
+
+        const body = `
+          <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <label style="font-size:12.5px; font-weight:600;">Currency Symbol Override:</label>
+            <input type="text" id="currencyOverrideInput" class="filter-input" style="width:110px;" value="${FormatUtil.escapeHTML(AppState.currency.symbol)}" placeholder="e.g. $, €, £" />
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Column</th><th>Data Role</th><th>Monetary</th><th>Percentage</th></tr></thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        `;
+        const footer = `
+          <button class="action-btn" onclick="OverlayManager.close()">Cancel</button>
+          <button class="action-btn primary" onclick="OverlayManager.applyFieldMapping()">Apply &amp; Recompute</button>
+        `;
+        this.open('Schema Detection & Field Mapping', body, footer);
+      },
+
+      applyFieldMapping() {
+        const symVal = document.getElementById('currencyOverrideInput')?.value?.trim() || '';
+        AppState.currency.symbol = symVal;
+        AppState.currency.manual = Boolean(symVal);
+
+        AppState.columns.forEach(col => {
+          const role = document.getElementById(`role_${col}`)?.value;
+          const isMon = Boolean(document.getElementById(`mon_${col}`)?.checked);
+          const isPct = Boolean(document.getElementById(`pct_${col}`)?.checked);
+          AppState.schema.overrides[col] = { role, isMonetary: isMon, isPercentage: isPct };
+        });
+
+        this.close();
+        IngestionModule.reprocess();
+      },
+
+      openBookmarks() {
+        const listHtml = AppState.bookmarks.length === 0
+          ? '<p style="color:var(--text-muted); font-size:12.5px;">No saved bookmarks yet. Save the current page and filter state below.</p>'
+          : AppState.bookmarks.map(b => `
+              <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); background:var(--bg-subtle);">
+                <div>
+                  <strong>${FormatUtil.escapeHTML(b.name)}</strong>
+                  <div style="font-size:11.5px; color:var(--text-muted);">Page ${b.page} &bull; Saved ${FormatUtil.escapeHTML(b.createdAt)}</div>
+                </div>
+                <div style="display:flex; gap:6px;">
+                  <button class="mini-btn" onclick="InteractionEngine.restoreBookmark('${b.id}')">Restore</button>
+                  <button class="mini-btn" onclick="InteractionEngine.deleteBookmark('${b.id}')">Delete</button>
+                </div>
+              </div>
+            `).join('');
+
+        const body = `
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="newBookmarkName" class="filter-input" placeholder="Bookmark name (e.g., Q4 Executive View)..." />
+            <button class="action-btn primary" onclick="InteractionEngine.saveBookmark(document.getElementById('newBookmarkName').value); OverlayManager.openBookmarks();">Save Current View</button>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:8px;">${listHtml}</div>
+        `;
+        this.open('Saved Report Bookmarks', body);
+      },
+
+      openDrillThrough() {
+        const dt = AppState.drillThrough;
+        const rows = dt.records && dt.records.length ? dt.records : FilterEngine.getFilteredRows(true);
+        const headerCtx = dt.dimension && dt.value !== null
+          ? `Filtered by <strong>${FormatUtil.escapeHTML(dt.dimension)}</strong> = <strong>${FormatUtil.escapeHTML(dt.value)}</strong> (${rows.length} records)`
+          : `${rows.length} records in active report scope`;
+
+        const cols = AppState.columns.slice(0, 8);
+        const tableHtml = rows.length === 0
+          ? '<p>No underlying records match the current selection.</p>'
+          : `<div class="table-wrap" style="max-height:380px;">
+              <table class="data-table">
+                <thead><tr>${cols.map(c => `<th>${FormatUtil.escapeHTML(c)}</th>`).join('')}</tr></thead>
+                <tbody>
+                  ${rows.slice(0, 100).map(r => `<tr>${cols.map(c => `<td>${FormatUtil.escapeHTML(r[c] ?? '')}</td>`).join('')}</tr>`).join('')}
+                </tbody>
+              </table>
+            </div>`;
+
+        const footer = `
+          <button class="action-btn" onclick="AppState.drillThrough={dimension:null,value:null,records:[]}; OverlayManager.openDrillThrough();">Show All Scope Records</button>
+          <button class="action-btn primary" onclick="OverlayManager.close()">Return to Report</button>
+        `;
+        this.open('Drill-Through Record Inspector', `<div style="font-size:12.5px;">${headerCtx}</div>${tableHtml}`, footer);
+      },
+
+      openDataTable() {
+        const rows = FilterEngine.getFilteredRows(true);
+        const cols = AppState.columns;
+        const html = `
+          <div style="font-size:12.5px; color:var(--text-muted);">Showing up to 150 rows of ${rows.length.toLocaleString()} filtered records.</div>
+          <div class="table-wrap" style="max-height:420px;">
+            <table class="data-table">
+              <thead><tr>${cols.map(c => `<th>${FormatUtil.escapeHTML(c)}</th>`).join('')}</tr></thead>
+              <tbody>
+                ${rows.slice(0, 150).map(r => `<tr>${cols.map(c => `<td>${FormatUtil.escapeHTML(r[c] ?? '')}</td>`).join('')}</tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+        this.open('Filtered Dataset Table', html);
+      }
+    };
+
+    /**
+     * PHASE 9: EXPORT ENGINE (INDIVIDUAL PAGE PDF & POWERPOINT EXPORTS)
+     */
+    const ExportManager = {
+      buildFilename(ext) {
+        const base = (AppState.fileMeta.name || 'financial_report').replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]+/g, '_');
+        return `${base}_Page${AppState.activePage}.${ext}`;
+      },
+
+      async exportCurrentPagePDF() {
+        if (!AppState.hasDataset) {
+          FormatUtil.showToast('Load a dataset before exporting PDF.', 'error');
+          return;
+        }
+        if (!window.jspdf || !window.html2canvas) {
+          FormatUtil.showToast('jsPDF or html2canvas library is not available in this session.', 'error');
+          return;
+        }
+        try {
+          FormatUtil.showToast(`Generating PDF for Page ${AppState.activePage}...`, 'info');
+          const target = document.getElementById('mainCanvas');
+          const canvas = await html2canvas(target, {
+            scale: 1.5,
+            backgroundColor: AppState.theme === 'dark' ? '#0B1120' : '#F8FAFC',
+            useCORS: true
+          });
+          const imgData = canvas.toDataURL('image/png');
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const margin = 24;
+          const availW = pageW - margin * 2;
+          const availH = pageH - margin * 2;
+          const ratio = Math.min(availW / canvas.width, availH / canvas.height);
+          const renderW = canvas.width * ratio;
+          const renderH = canvas.height * ratio;
+
+          pdf.addImage(imgData, 'PNG', margin, margin, renderW, renderH);
+          pdf.save(this.buildFilename('pdf'));
+          FormatUtil.showToast(`Exported ${this.buildFilename('pdf')}.`, 'success');
+        } catch (err) {
+          FormatUtil.showToast(`PDF export failed: ${err.message}`, 'error');
+        }
+      },
+
+      async exportCurrentPagePPTX() {
+        if (!AppState.hasDataset) {
+          FormatUtil.showToast('Load a dataset before exporting PowerPoint.', 'error');
+          return;
+        }
+        if (!window.PptxGenJS) {
+          FormatUtil.showToast('PptxGenJS library is not available in this session.', 'error');
+          return;
+        }
+        try {
+          FormatUtil.showToast(`Generating PowerPoint for Page ${AppState.activePage}...`, 'info');
+          const rows = FilterEngine.getFilteredRows(true);
+          const metrics = FinancialEngine.computeFilteredMetrics(rows);
+          const pptx = new PptxGenJS();
+          pptx.layout = 'LAYOUT_WIDE';
+
+          const slide = pptx.addSlide();
+          const pageTitle = document.getElementById('reportPageTitle')?.textContent?.trim() || `Report Page ${AppState.activePage}`;
+          const activeFiltersText = FilterEngine.getActiveFilterSummaryList().map(f => f.label).join(' | ') || 'All Scope Records';
+
+          // Header bar
+          slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 13.333, h: 0.75, fill: { color: 'D6002A' } });
+          slide.addText(pageTitle, { x: 0.5, y: 0.15, w: 12.3, h: 0.45, color: 'FFFFFF', fontSize: 20, bold: true });
+          slide.addText(`Dataset: ${AppState.fileMeta.name} | Context: ${activeFiltersText}`, {
+            x: 0.5, y: 0.82, w: 12.3, h: 0.3, color: '475569', fontSize: 10.5
+          });
+
+          // Editable KPI boxes
+          const kpisToShow = metrics.kpis.slice(0, 4);
+          kpisToShow.forEach((k, idx) => {
+            const xPos = 0.5 + idx * 3.1;
+            slide.addShape(pptx.ShapeType.roundRect, {
+              x: xPos, y: 1.2, w: 2.95, h: 1.15,
+              fill: { color: 'F8FAFC' }, line: { color: 'CBD5E1', width: 1 }
+            });
+            slide.addText(k.label, { x: xPos + 0.12, y: 1.28, w: 2.7, h: 0.28, fontSize: 10, color: '475569', bold: true });
+            slide.addText(k.value, { x: xPos + 0.12, y: 1.56, w: 2.7, h: 0.42, fontSize: 17, color: '0F172A', bold: true });
+            slide.addText(k.deltaLabel, { x: xPos + 0.12, y: 2.02, w: 2.7, h: 0.24, fontSize: 9, color: '64748B' });
+          });
+
+          // Editable summary table
+          if (metrics.dimBreakdown.length > 0 && metrics.primaryDim) {
+            const tblRows = [
+              [metrics.primaryDim, 'Records', metrics.primaryMetricCol || 'Value', 'Share %']
+            ];
+            metrics.dimBreakdown.slice(0, 6).forEach(d => {
+              tblRows.push([d.name, String(d.count), FormatUtil.formatCurrency(d.value), `${d.sharePct.toFixed(1)}%`]);
+            });
+            slide.addTable(tblRows, {
+              x: 0.5, y: 2.55, w: 6.4, h: 2.8,
+              fontSize: 10, border: { pt: 0.5, color: 'CBD5E1' },
+              fill: { color: 'FFFFFF' }
+            });
+          }
+
+          // Key Findings bullets
+          const findingLines = metrics.insights.slice(0, 3).map(ins => ({
+            text: `• ${ins.observation} (${ins.metric})`,
+            options: { fontSize: 10.5, color: '0F172A', breakLine: true }
+          }));
+          slide.addText(
+            [{ text: 'Key Findings\n', options: { bold: true, fontSize: 12, color: 'D6002A', breakLine: true } }, ...findingLines],
+            { x: 7.15, y: 2.55, w: 5.65, h: 3.4, valign: 'top' }
+          );
+
+          await pptx.writeFile({ fileName: this.buildFilename('pptx') });
+          FormatUtil.showToast(`Exported ${this.buildFilename('pptx')}.`, 'success');
+        } catch (err) {
+          FormatUtil.showToast(`PowerPoint export failed: ${err.message}`, 'error');
+        }
+      }
+    };
+
+    /**
+     * APPLICATION CONTROLLER & NAVIGATION
+     */
+    const AppController = {
+      init() {
+        ThemeManager.init();
+        document.getElementById('btnToggleSidebar').addEventListener('click', () => {
+          document.getElementById('appShell').classList.toggle('sidebar-collapsed');
+        });
+        if (window.lucide) lucide.createIcons();
+      },
+
+      toggleFilterPanel() {
+        document.getElementById('appShell').classList.toggle('filter-collapsed');
+      },
+
+      updateNavigationLabels() {
+        const t2 = AppState.selectedPageThemes[2]?.name || 'Primary Analysis';
+        const t3 = AppState.selectedPageThemes[3]?.name || 'Secondary Analysis';
+        const t4 = AppState.selectedPageThemes[4]?.name || 'Advanced Analysis';
+        document.getElementById('tabPage2').textContent = `2. ${t2}`;
+        document.getElementById('tabPage3').textContent = `3. ${t3}`;
+        document.getElementById('tabPage4').textContent = `4. ${t4}`;
+        document.getElementById('sidePage2Label').textContent = t2;
+        document.getElementById('sidePage3Label').textContent = t3;
+        document.getElementById('sidePage4Label').textContent = t4;
+      },
+
+      navigatePage(pageNum) {
+        AppState.activePage = pageNum;
+        document.querySelectorAll('.page-tab-btn').forEach(btn => {
+          btn.classList.toggle('active', Number(btn.dataset.page) === pageNum);
+        });
+        document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+          item.classList.toggle('active', Number(item.dataset.page) === pageNum);
+        });
+        if (AppState.hasDataset) {
+          RenderEngine.renderCurrentPage();
+        }
+      },
+
+      scrollToSection(id) {
+        if (!AppState.hasDataset) {
+          FormatUtil.showToast('Upload a dataset first to view report sections.', 'info');
+          return;
+        }
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => AppController.init());
+  </script>
+</body>
+</html>
